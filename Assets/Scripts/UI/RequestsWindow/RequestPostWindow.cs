@@ -56,7 +56,7 @@ namespace Rondo.QuestSim.UI.Requests {
             }
             m_CurrentRequest = request;
 
-            questChainTitle.text = "<b><u>" + request.QuestSource.RequestTitle + "</u></b>\n<size=18><i>" + request.ObjectiveCount + " Objectives</i></size>";
+            questChainTitle.text = "<b><u>" + request.QuestSource.RequestTitle + "</u></b>\n<size=18><i>" + request.ObjectiveCount + " Objective(s)</i></size>";
             difficultyText.text = ""+request.DifficultyLevel;
         }
 

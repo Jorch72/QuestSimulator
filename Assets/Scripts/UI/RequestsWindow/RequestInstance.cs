@@ -34,7 +34,7 @@ namespace Rondo.QuestSim.UI.Requests {
         }
 
         private void UpdateText() {
-            nameText.text = "<b>"+m_QuestInstance.QuestSource.RequestTitle + "</b>\n<i>" + m_QuestInstance.ObjectiveCount + " Objectives</i>";
+            nameText.text = "<b>"+m_QuestInstance.QuestSource.RequestTitle + "</b>\n<i>" + m_QuestInstance.ObjectiveCount + " Objective(s)</i>";
             difficultyText.text = ""+m_QuestInstance.DifficultyLevel;
         }
     }
