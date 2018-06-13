@@ -7,36 +7,30 @@ using UnityEngine;
 
 namespace Rondo.QuestSim.Reputation {
 
-    public class ReputationManager : MonoBehaviourSingleton<ReputationManager> {
+    public static class ReputationManager {
 
-        public ReputationUI reputationUI;
+        private static Dictionary<QuestSourceFaction, ReputationTracker> m_ReputationDictionary = new Dictionary<QuestSourceFaction, ReputationTracker>();
 
-        private Dictionary<QuestSourceFaction, ReputationTracker> m_ReputationDictionary = new Dictionary<QuestSourceFaction, ReputationTracker>();
-
-        private void Awake() {
-
-        }
-
-        private void Start() {
+        public static void Initialize() {
             for(int i = 0; i < 6; i++) {
                 AddRandomFaction();
             }
         }
 
-        private void AddRandomFaction() {
+        private static void AddRandomFaction() {
             QuestSourceFaction newRep = ReputationGenerator.GenerateReputationInstance(new QuestSourceFaction(ReputationPersonalities.UNKNOWN), ReputationPersonalities.UNKNOWN, ReputationMoralityTypes.UNKNOWN);
             AddFactionRepInstance(newRep);
         }
 
-        public void AddFactionRepInstance(QuestSourceFaction instance) {
+        public static void AddFactionRepInstance(QuestSourceFaction instance) {
             if (m_ReputationDictionary.ContainsKey(instance)) return;
             ReputationTracker newTracker = new ReputationTracker(instance);
             m_ReputationDictionary.Add(instance, newTracker);
 
-            reputationUI.AddReputationTracker(newTracker);
+            ReputationUI.Instance.AddReputationTracker(newTracker);
         }
 
-        public QuestSourceFaction GetRandomFaction() {
+        public static QuestSourceFaction GetRandomFaction() {
             List<QuestSourceFaction> factions = new List<QuestSourceFaction>(m_ReputationDictionary.Keys);
             return factions.GetRandom();
         }

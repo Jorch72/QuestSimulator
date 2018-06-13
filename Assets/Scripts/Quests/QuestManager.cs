@@ -33,8 +33,7 @@ namespace Rondo.QuestSim.Quests {
         public static void RefreshRequests() {
             Requests.Clear();
 
-            ReputationManager repManager = ReputationManager.Instance;
-            QuestSourceFaction faction = repManager.GetRandomFaction();
+            QuestSourceFaction faction = ReputationManager.GetRandomFaction();
             int requestCount = Random.Range(4, 6);
 
             for (int i = 0; i < requestCount; i++) {
@@ -44,7 +43,7 @@ namespace Rondo.QuestSim.Quests {
                 if (sourceChoice == 0) {
                     qSource = ReputationGenerator.GenerateReputationInstance(new QuestSourceRumor());
                 } else if(sourceChoice == 1){
-                    qSource = ReputationManager.Instance.GetRandomFaction();
+                    qSource = ReputationManager.GetRandomFaction();
                 } else {
                     qSource = ReputationGenerator.GenerateReputationInstance(new QuestSourcePerson(EnumUtility.GetRandomEnumValue<ReputationPersonalities>()));
                 }

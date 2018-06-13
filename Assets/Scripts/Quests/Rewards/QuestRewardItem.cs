@@ -1,4 +1,5 @@
-﻿using Rondo.QuestSim.Reputation;
+﻿using Rondo.QuestSim.Inventory;
+using Rondo.QuestSim.Reputation;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,7 +7,13 @@ using UnityEngine;
 namespace Rondo.QuestSim.Quests.Rewards {
 
     public class QuestRewardItem : IQuestReward {
-        public float RewardValue { get { return 1; } }
+
+        public GameItem Item { get; private set; }
+        public float RewardValue { get { return Item.PowerClass; } }
+
+        public QuestRewardItem(GameItem item) {
+            Item = item;
+        }
 
         public void GiveToHero() {
             

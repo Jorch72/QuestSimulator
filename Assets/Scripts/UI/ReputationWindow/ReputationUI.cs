@@ -1,4 +1,5 @@
-﻿using Rondo.QuestSim.Reputation;
+﻿using Rondo.Generic.Utility;
+using Rondo.QuestSim.Reputation;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,7 +7,7 @@ using UnityEngine.UI;
 
 namespace Rondo.QuestSim.UI.Reputation {
 
-    public class ReputationUI : MonoBehaviour {
+    public class ReputationUI : MonoBehaviourSingleton<ReputationUI> {
 
         public ReputationInstanceUI instancePrefab;
         public RectTransform reputationInstanceParent;

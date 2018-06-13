@@ -1,4 +1,6 @@
-﻿using Rondo.QuestSim.Reputation;
+﻿using Rondo.Generic.Utility;
+using Rondo.QuestSim.Inventory;
+using Rondo.QuestSim.Reputation;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -107,7 +109,7 @@ namespace Rondo.QuestSim.Utility {
 
         public static string GetTerritoryName() {
             int type = Random.Range(0, 1);
-            if(type == 0) {
+            if (type == 0) {
                 string[] partOne = new string[] {
                     "Swan",
                     "Rock",
@@ -148,7 +150,7 @@ namespace Rondo.QuestSim.Utility {
                 };
 
                 return partOne[Random.Range(0, partOne.Length)] + partTwo[Random.Range(0, partTwo.Length)];
-            }else if(type == 1) {
+            } else if (type == 1) {
 
             }
 
@@ -253,7 +255,8 @@ namespace Rondo.QuestSim.Utility {
                     "Guardians",
                     "Striders",
                     "Vanguard",
-                    "Phantoms"
+                    "Phantoms",
+                    "Order"
                 };
 
                 string[] partTwo = new string[] {
@@ -281,6 +284,34 @@ namespace Rondo.QuestSim.Utility {
             return "";
         }
 
+        public static string GetItemName(GameItemRarity rarity) {
+            string[] itemTypes = new string[] {
+               "Sword",
+               "Hammer",
+               "Dagger",
+               "Shield",
+               "Staff",
+               "Wand",
+               "Chestpiece",
+               "Helmet",
+               "Gauntlets",
+               "Greaves",
+               "Leggings",
+               "Shoulderpads"
+            };
+            switch (rarity) {
+                default:
+                case GameItemRarity.COMMON:
+                    return "Trainee's " + itemTypes[Random.Range(0, itemTypes.Length)];
+                case GameItemRarity.UNCOMMON:
+                    return "Steel " + itemTypes[Random.Range(0, itemTypes.Length)];
+                case GameItemRarity.RARE:
+                    return "Enchanted " + itemTypes[Random.Range(0, itemTypes.Length)];
+                case GameItemRarity.EPIC:
+                    return "Masterwork " + itemTypes[Random.Range(0, itemTypes.Length)];
+                case GameItemRarity.LEGENDARY:
+                    return GetCompoundName(EnumUtility.GetRandomEnumValue<ReputationMoralityTypes>()) + ", " + itemTypes[Random.Range(0, itemTypes.Length)] + " of " + GetTerritoryName();
+            }
+        }
     }
-
 }

@@ -35,8 +35,10 @@ namespace Rondo.QuestSim.UI.ActiveQuests {
         }
 
         private void UpdateText() {
-            nameText.text = "<b>"+m_QuestInstance.QuestSource.RequestTitle + "</b>\n<i>" + m_QuestInstance.GoldReward.GoldCount + " GP</i>";
-            difficultyText.text = ""+m_QuestInstance.DifficultyLevel;
+            string titleText = "<b>" + m_QuestInstance.QuestSource.RequestTitle + "</b>\n<i>" + m_QuestInstance.GoldReward.GoldCount + " GP</i>";
+            if (m_QuestInstance.ItemRewards.Count != 0) titleText += "<i>" + " & " + m_QuestInstance.ItemRewards.Count + " Item(s)</i>";
+            nameText.text = titleText;
+            difficultyText.text = "" + m_QuestInstance.DifficultyLevel;
         }
     }
 
