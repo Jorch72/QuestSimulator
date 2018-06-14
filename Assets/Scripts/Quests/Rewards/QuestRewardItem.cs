@@ -9,7 +9,7 @@ namespace Rondo.QuestSim.Quests.Rewards {
     public class QuestRewardItem : IQuestReward {
 
         public GameItem Item { get; private set; }
-        public float RewardValue { get { return Item.PowerClass; } }
+        public float RewardValue { get { return Item.OverallPower * 0.1f; } }
 
         public QuestRewardItem(GameItem item) {
             Item = item;

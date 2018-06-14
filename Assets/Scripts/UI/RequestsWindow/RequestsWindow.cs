@@ -25,19 +25,21 @@ namespace Rondo.QuestSim.UI.Requests {
             gameObject.SetActive(false);
         }
 
+        private void OnEnable() {
+            ReloadInstances();
+        }
+
         private void ToggleOpenCloseState() {
             gameObject.SetActive(!gameObject.activeSelf);
         }
 
-        private void Update() {
-            if (Input.GetKeyDown(KeyCode.Space)) {
-                QuestManager.RefreshRequests();
-                ReloadInstances();
-            }
-        }
-
         public void ReloadInstances() {
+            bool isFirst = true;
             foreach(RectTransform child in requestInstanceParent) {
+                if (isFirst) {
+                    isFirst = false;
+                    continue;
+                }
                 Destroy(child.gameObject);
             }
 

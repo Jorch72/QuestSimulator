@@ -7,7 +7,7 @@ namespace Rondo.QuestSim.Quests.Rewards {
 
     public class QuestRewardGold : IQuestReward {
         public int GoldCount { get; set; }
-        public float RewardValue { get { return GoldCount * 0.1f; } }
+        public float RewardValue { get { return GoldCount; } }
 
         public void GiveToHero() {
             

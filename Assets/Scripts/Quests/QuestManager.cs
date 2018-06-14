@@ -28,6 +28,8 @@ namespace Rondo.QuestSim.Quests {
             m_QuestSizeChoser = new WeightedRandom<int>(
                 new int[5] { 1, 2, 3, 4, 5 },
                 new int[5] { 5, 3, 3, 2, 1 });
+
+            RefreshRequests();
         }
 
         public static void RefreshRequests() {

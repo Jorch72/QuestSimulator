@@ -15,6 +15,7 @@ namespace Rondo.QuestSim.UI.General {
         public TextMeshProUGUI titleText;
         public TextMeshProUGUI attackText;
         public TextMeshProUGUI defenceText;
+        public TextMeshProUGUI overallPowerText;
 
         public GraphicRaycaster canvasRaycaster;
 
@@ -43,6 +44,7 @@ namespace Rondo.QuestSim.UI.General {
             titleText.text = "<b>" + item.DisplayName + "</b>\n<size=18><i>" + item.Rarity.ToString() + "</size></i>";
             attackText.text = ""+item.AttackPower;
             defenceText.text = "" + item.DefencePower;
+            overallPowerText.text = "" + item.OverallPower;
         }
     }
 

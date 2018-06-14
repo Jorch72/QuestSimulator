@@ -116,7 +116,7 @@ namespace Rondo.QuestSim.UI.Requests {
 
             List<string> dropdownOptions = new List<string> { "-" };
             foreach(GameItem item in InventoryManager.OwnedItems) {
-                dropdownOptions.Add(item.DisplayName + " ("+ item.PowerClass + ")");
+                dropdownOptions.Add(item.DisplayName + " ("+ item.OverallPower + ")");
             }
             itemDropdown.AddOptions(dropdownOptions);
             itemDropdown.value = 0;
