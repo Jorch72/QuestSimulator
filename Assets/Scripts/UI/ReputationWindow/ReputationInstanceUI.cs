@@ -26,7 +26,7 @@ namespace Rondo.QuestSim.UI.Reputation {
         }
 
         public void ApplyReputation(ReputationTracker tracker) {
-            nameText.text = tracker.ReputationInstance.DisplayName;
+            nameText.text = tracker.FactionInstance.DisplayName;
             m_Tracker = tracker;
             UpdateProgress();
 

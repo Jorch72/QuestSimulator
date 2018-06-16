@@ -33,8 +33,8 @@ namespace Rondo.QuestSim.UI.Reputation {
             newInstance.GetComponent<RectTransform>().SetParent(reputationInstanceParent);
             newInstance.ApplyReputation(tracker);
 
-            for (int i = 0; i < Random.Range(3, 6); i++) {
-                newInstance.AddHero(heroInstancePrefab, HeroManager.GetRandomHero());
+            foreach(HeroInstance hero in tracker.FactionInstance.Heroes) {
+                newInstance.AddHero(heroInstancePrefab, hero);
             }
         }
 

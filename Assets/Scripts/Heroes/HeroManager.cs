@@ -12,14 +12,13 @@ namespace Rondo.QuestSim.Heroes {
         private static List<HeroInstance> m_Heroes = new List<HeroInstance>();
 
         public static void Initialize() {
-            for(int i = 0; i < 25; i++) {
-                AddRandomHero();
-            }
+
         }
 
-        private static void AddRandomHero() {
+        private static HeroInstance AddRandomHero() {
             HeroInstance newHero = HeroGenerator.GenerateHero();
             AddHero(newHero);
+            return newHero;
         }
 
         public static void AddHero(HeroInstance instance) {

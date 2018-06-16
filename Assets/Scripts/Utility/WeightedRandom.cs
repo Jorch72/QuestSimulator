@@ -13,7 +13,7 @@ namespace Rondo.Generic.Utility {
 
             m_Weights = new int[weights.Length];
             for (int i = 0; i < weights.Length; i++) {
-                int currentWeight = weights[i];
+                int currentWeight = weights[i] * 100;
                 m_TotalWeight += currentWeight;
                 m_Weights[i] = m_TotalWeight;
             }

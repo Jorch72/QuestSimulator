@@ -1,4 +1,5 @@
-﻿using Rondo.QuestSim.Quests;
+﻿using Rondo.QuestSim.Heroes;
+using Rondo.QuestSim.Quests;
 using Rondo.QuestSim.Reputation;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,8 +9,12 @@ namespace Rondo.QuestSim.Quests.Sources {
 
     public class QuestSourceFaction : IQuestSource {
 
+        private static int MIN_HEROES_PER_FACTION = 2;
+        private static int MAX_HEROES_PER_FACTION = 6;
+
         public QuestSourceFaction(ReputationBiases personality) {
             personalityType = personality;
+            Heroes = new List<HeroInstance>();
         }
 
         //Display options
@@ -29,10 +34,16 @@ namespace Rondo.QuestSim.Quests.Sources {
         public ReputationBiases personalityType = ReputationBiases.VILLAGERS;
         private ReputationNameConventions m_NamingConvention;
 
+        //Heroes
+        public List<HeroInstance> Heroes { get; set; }
+
         public void GenerateSettings() {
             ReputationGenerator.GenerateQuestPreferences(this, personalityType);
             ReputationGenerator.GenerateName(this, ReputationNameConventions.GROUP);
-            //ReputationGenerator.GenerateName(this, ReputationNameConventions.ADJECTIVES_GROUP, ReputationNameConventions.GROUP_OF_ADJECTIVE, ReputationNameConventions.GROUP_OF_THE_ADJECTIVE);
+
+            for(int i = 0; i < Random.Range(MIN_HEROES_PER_FACTION, MAX_HEROES_PER_FACTION + 1); i++) {
+                Heroes.Add(HeroGenerator.GenerateHero());
+            }
         }
     }
 }

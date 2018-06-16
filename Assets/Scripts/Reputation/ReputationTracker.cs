@@ -8,7 +8,7 @@ namespace Rondo.QuestSim.Reputation {
 
     public class ReputationTracker {
 
-        public QuestSourceFaction ReputationInstance { get; private set; }
+        public QuestSourceFaction FactionInstance { get; private set; }
         public ReputationLevels ReputationLevel { get; private set; }
         public float ReputationScore {
             get { return m_ReputationScore; }
@@ -31,7 +31,7 @@ namespace Rondo.QuestSim.Reputation {
         private float m_ReputationScore = 0;
 
         public ReputationTracker(QuestSourceFaction instance) {
-            ReputationInstance = instance;
+            FactionInstance = instance;
         }
 
         public void ModifyReputation(float i) {
