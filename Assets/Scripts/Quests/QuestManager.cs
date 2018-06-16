@@ -47,7 +47,7 @@ namespace Rondo.QuestSim.Quests {
                 } else if(sourceChoice == 1){
                     qSource = ReputationManager.GetRandomFaction();
                 } else {
-                    qSource = ReputationGenerator.GenerateReputationInstance(new QuestSourcePerson(EnumUtility.GetRandomEnumValue<ReputationPersonalities>()));
+                    qSource = ReputationGenerator.GenerateReputationInstance(new QuestSourcePerson(EnumUtility.GetRandomEnumValue<ReputationBiases>()));
                 }
                 QuestInstance newChain = QuestGenerator.GenerateQuestInstance(qSource, questObjectiveSize);
                 Requests.Add(newChain);

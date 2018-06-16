@@ -12,19 +12,12 @@ namespace Rondo.QuestSim.Reputation {
         EXALTED = 10
     }
 
-    public enum ReputationPersonalities {
+    public enum ReputationBiases {
         UNKNOWN = -1,
         VILLAGERS,
         GOVERNMENT,
         MONSTER_SLAYING,
         WAR_EFFORT
-    }
-
-    public enum ReputationMoralityTypes {
-        UNKNOWN = -1,
-        NEUTRAL,
-        GOOD,
-        EVIL
     }
 
     public enum ReputationNameConventions {

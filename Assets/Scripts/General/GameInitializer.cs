@@ -1,4 +1,5 @@
 ﻿using Rondo.Generic.Utility;
+using Rondo.QuestSim.Heroes;
 using Rondo.QuestSim.Inventory;
 using Rondo.QuestSim.Quests;
 using Rondo.QuestSim.Quests.Sources;
@@ -13,6 +14,7 @@ namespace Rondo.QuestSim.General {
     public class GameInitializer : MonoBehaviourSingleton<GameInitializer> {
 
         private void Awake() {
+            HeroManager.Initialize();
             ReputationManager.Initialize();
             QuestManager.Initialize();
             InventoryManager.Initialize();

@@ -13,56 +13,44 @@ namespace Rondo.QuestSim.Reputation {
 
         public static T GenerateReputationInstance<T>(
             T newInstance,
-            ReputationPersonalities personality = ReputationPersonalities.UNKNOWN,
-            ReputationMoralityTypes morality = ReputationMoralityTypes.UNKNOWN)
+            ReputationBiases personality = ReputationBiases.UNKNOWN)
             where T : IQuestSource {
-
-            newInstance.MoralityType = morality;
 
             newInstance.GenerateSettings();
 
             return newInstance;
         }
 
-        public static void GenerateMorality(IQuestSource instance, ReputationMoralityTypes forcedType) {
-            while (forcedType == ReputationMoralityTypes.UNKNOWN) {
-                forcedType = EnumUtility.GetRandomEnumValue<ReputationMoralityTypes>();
-                instance.MoralityType = forcedType;
-            }
-
-            instance.MoralityType = forcedType;
-        }
-
-        public static void GenerateQuestPreferences(QuestSourceFaction instance, ReputationPersonalities forcedType) {
-            while (forcedType == ReputationPersonalities.UNKNOWN) {
-                forcedType = EnumUtility.GetRandomEnumValue<ReputationPersonalities>();
+        public static void GenerateQuestPreferences(QuestSourceFaction instance, ReputationBiases forcedType) {
+            while (forcedType == ReputationBiases.UNKNOWN) {
+                forcedType = EnumUtility.GetRandomEnumValue<ReputationBiases>();
             }
 
             instance.personalityType = forcedType;
 
             switch (instance.personalityType) {
-                case ReputationPersonalities.VILLAGERS:
+                case ReputationBiases.VILLAGERS:
                     instance.questPreferenceChores = 1;
                     instance.questPreferenceDelivery = 1;
                     instance.questPreferenceMonsterSlaying = 0.1f;
                     instance.questPreferenceWar = 0;
                     instance.MaxQuestDifficulty = 3;
                     break;
-                case ReputationPersonalities.GOVERNMENT:
+                case ReputationBiases.GOVERNMENT:
                     instance.questPreferenceChores = 0.1f;
                     instance.questPreferenceDelivery = 1f;
                     instance.questPreferenceMonsterSlaying = 0.5f;
                     instance.questPreferenceWar = 0.1f;
                     instance.MaxQuestDifficulty = 5;
                     break;
-                case ReputationPersonalities.MONSTER_SLAYING:
+                case ReputationBiases.MONSTER_SLAYING:
                     instance.questPreferenceChores = 0;
                     instance.questPreferenceDelivery = 0.25f;
                     instance.questPreferenceMonsterSlaying = 1f;
                     instance.questPreferenceWar = 0.1f;
                     instance.MaxQuestDifficulty = 7;
                     break;
-                case ReputationPersonalities.WAR_EFFORT:
+                case ReputationBiases.WAR_EFFORT:
                     instance.questPreferenceChores = 0;
                     instance.questPreferenceDelivery = 0.2f;
                     instance.questPreferenceMonsterSlaying = 0f;
@@ -84,7 +72,7 @@ namespace Rondo.QuestSim.Reputation {
             StringBuilder sb = new StringBuilder();
             switch (forcedType) {
                 case ReputationNameConventions.COMPOUND:
-                    instance.DisplayName = NameDatabase.GetCompoundName(instance.MoralityType);
+                    instance.DisplayName = NameDatabase.GetCompoundName();
                     break;
                 case ReputationNameConventions.GROUP:
                     instance.DisplayName = NameDatabase.GetGroupName();

@@ -1,4 +1,5 @@
-﻿using Rondo.QuestSim.Reputation;
+﻿using Rondo.QuestSim.Heroes;
+using Rondo.QuestSim.Reputation;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -12,6 +13,7 @@ namespace Rondo.QuestSim.UI.Reputation {
         public TextMeshProUGUI reputationLevelText;
         public TextMeshProUGUI reputationProgressText;
         public RectTransform reputationProgressFill;
+        public RectTransform heroContentParent;
 
         private ReputationTracker m_Tracker;
 
@@ -38,6 +40,13 @@ namespace Rondo.QuestSim.UI.Reputation {
             if (levelProgressText.Contains(".")) levelProgressText = levelProgressText.Split('.')[0];
             reputationProgressText.text = levelProgressText + "%";
             reputationProgressFill.localScale = new Vector3(levelProgress, reputationProgressFill.localScale.y, reputationProgressFill.localScale.z);
+        }
+
+        public void AddHero(ReputationHeroInstanceUI uiPrefab, HeroInstance hero) {
+            ReputationHeroInstanceUI heroUI = Instantiate(uiPrefab);
+            heroUI.GetComponent<RectTransform>().SetParent(heroContentParent);
+
+            heroUI.ApplyHero(hero);
         }
     }
 

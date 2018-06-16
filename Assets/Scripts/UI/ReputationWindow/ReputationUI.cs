@@ -1,4 +1,5 @@
 ﻿using Rondo.Generic.Utility;
+using Rondo.QuestSim.Heroes;
 using Rondo.QuestSim.Reputation;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,7 +10,8 @@ namespace Rondo.QuestSim.UI.Reputation {
 
     public class ReputationUI : MonoBehaviourSingleton<ReputationUI> {
 
-        public ReputationInstanceUI instancePrefab;
+        public ReputationInstanceUI reputationInstancePrefab;
+        public ReputationHeroInstanceUI heroInstancePrefab;
         public RectTransform reputationInstanceParent;
         public Button openCloseToggle;
 
@@ -27,9 +29,13 @@ namespace Rondo.QuestSim.UI.Reputation {
         }
 
         public void AddReputationTracker(ReputationTracker tracker) {
-            ReputationInstanceUI newInstance = Instantiate(instancePrefab);
+            ReputationInstanceUI newInstance = Instantiate(reputationInstancePrefab);
             newInstance.GetComponent<RectTransform>().SetParent(reputationInstanceParent);
             newInstance.ApplyReputation(tracker);
+
+            for (int i = 0; i < Random.Range(3, 6); i++) {
+                newInstance.AddHero(heroInstancePrefab, HeroManager.GetRandomHero());
+            }
         }
 
     }

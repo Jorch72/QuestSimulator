@@ -8,7 +8,7 @@ namespace Rondo.QuestSim.Quests.Sources {
 
     public class QuestSourceFaction : IQuestSource {
 
-        public QuestSourceFaction(ReputationPersonalities personality) {
+        public QuestSourceFaction(ReputationBiases personality) {
             personalityType = personality;
         }
 
@@ -26,12 +26,10 @@ namespace Rondo.QuestSim.Quests.Sources {
 
         public int MaxQuestDifficulty { get; set; }
 
-        public ReputationPersonalities personalityType = ReputationPersonalities.VILLAGERS;
-        public ReputationMoralityTypes MoralityType { get; set; }
+        public ReputationBiases personalityType = ReputationBiases.VILLAGERS;
         private ReputationNameConventions m_NamingConvention;
 
         public void GenerateSettings() {
-            ReputationGenerator.GenerateMorality(this, MoralityType);
             ReputationGenerator.GenerateQuestPreferences(this, personalityType);
             ReputationGenerator.GenerateName(this, ReputationNameConventions.GROUP);
             //ReputationGenerator.GenerateName(this, ReputationNameConventions.ADJECTIVES_GROUP, ReputationNameConventions.GROUP_OF_ADJECTIVE, ReputationNameConventions.GROUP_OF_THE_ADJECTIVE);

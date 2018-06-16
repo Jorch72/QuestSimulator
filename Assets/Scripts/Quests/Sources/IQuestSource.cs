@@ -9,7 +9,6 @@ namespace Rondo.QuestSim.Quests {
         string DisplayName { get; set; }
         string RequestTitle { get; }
 
-        ReputationMoralityTypes MoralityType { get; set; }
         int MaxQuestDifficulty { get; set; }
 
         void GenerateSettings();

@@ -9,10 +9,9 @@
 		_FadeColor ("Fade Color", Color) = (1,1,1,1)
 	}
 	SubShader{
-		Tags{ "Queue" = "Transparent" "RenderType" = "Transparent" }
-		LOD 100
+		Tags{ "RenderType" = "Opaque"  }
+		LOD 400
 
-		ZWrite Off
 		Blend SrcAlpha OneMinusSrcAlpha
 	
 		CGPROGRAM
