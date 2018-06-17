@@ -17,6 +17,7 @@ namespace Rondo.QuestSim.Heroes {
             newHero.Nickname = Random.Range(0, 4) == 0 ? NameDatabase.GetCompoundName() : "";
             newHero.Class = EnumUtility.GetRandomEnumValue<HeroClasses>();
             newHero.Experience = Random.Range(0, 1000);
+            newHero.EquipmentLevel = Random.Range(0, 100);
             newHero.IsDiscovered = Random.Range(0, 2) == 0 ? true : false;
 
             return newHero;
