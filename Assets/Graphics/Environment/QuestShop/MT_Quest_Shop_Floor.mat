@@ -59,8 +59,8 @@ Material:
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
-    - _FadeMax: 10
-    - _FadeMin: 2.53
+    - _FadeMax: -1
+    - _FadeMin: 0
     - _GlossMapScale: 1
     - _Glossiness: 0
     - _GlossyReflections: 1

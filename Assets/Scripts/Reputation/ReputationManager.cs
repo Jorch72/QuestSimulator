@@ -37,6 +37,11 @@ namespace Rondo.QuestSim.Reputation {
             return factions.GetRandom();
         }
 
+        public static ReputationTracker GetReputationTracker(QuestSourceFaction faction) {
+            if (!m_ReputationDictionary.ContainsKey(faction)) return null;
+            return m_ReputationDictionary[faction];
+        }
+
     }
 
 }

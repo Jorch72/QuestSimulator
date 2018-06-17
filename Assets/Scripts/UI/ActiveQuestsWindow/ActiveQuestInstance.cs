@@ -1,5 +1,6 @@
 ﻿using Rondo.QuestSim.Quests;
 using Rondo.QuestSim.Reputation;
+using Rondo.QuestSim.UI.PostedQuests;
 using Rondo.QuestSim.UI.Requests;
 using System.Collections;
 using System.Collections.Generic;
@@ -22,11 +23,11 @@ namespace Rondo.QuestSim.UI.ActiveQuests {
         }
 
         void Start() {
-            m_Button.onClick.AddListener(StartQuestPost);
+            m_Button.onClick.AddListener(OpenQuestWindow);
         }
 
-        private void StartQuestPost() {
-            RequestsWindow.Instance.postWindow.OpenWindow(m_QuestInstance);
+        private void OpenQuestWindow() {
+            PostedQuestWindow.Instance.OpenWindow(m_QuestInstance, false);
         }
 
         public void ApplyQuestChain(QuestInstance chain) {

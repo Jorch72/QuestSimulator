@@ -3,19 +3,28 @@ using Rondo.QuestSim.Heroes;
 using Rondo.QuestSim.Quests;
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Rondo.QuestSim.Gameplay {
 
-    public static class DayManager {
+    public class DayManager : MonoBehaviourSingleton<DayManager> {
 
-        public static int CurrentDay { get; set; }
-        public static Action OnNextDay = delegate { };
+        public int CurrentDay { get; set; }
+        public Action OnNextDay = delegate { };
 
-        public static void Initialize() {
+        private void Awake() {
             CurrentDay = 1;
+
+            Instance = this;
         }
 
-        public static void EndDay() {
+        private void Update() {
+            if (Input.GetKeyDown(KeyCode.Q)) {
+                EndDay();
+            }
+        }
+
+        public void EndDay() {
             //Return heroes
             List<QuestInstance> activeQuestList = new List<QuestInstance>(QuestManager.ActiveQuests.Keys);
             for (int i = activeQuestList.Count - 1; i >= 0; i--) {
@@ -32,11 +41,19 @@ namespace Rondo.QuestSim.Gameplay {
 
             OnNextDay();
 
-            foreach (QuestInstance postedQuest in QuestManager.PostedQuests) {
-                QuestManager.ActiveQuests.Add(postedQuest, HeroManager.GetRandomHero());
-            }
+            QuestManager.PostedQuests = UpdateQuestTimeLimits(QuestManager.PostedQuests, 0);
+            QuestManager.Requests = UpdateQuestTimeLimits(QuestManager.Requests, 1);
+        }
 
-            QuestManager.PostedQuests.Clear();
+        private List<QuestInstance> UpdateQuestTimeLimits(List<QuestInstance> list, int dayLimit) {
+            for (int i = list.Count - 1; i >= 0; i--) {
+                QuestInstance quest = list[i];
+                quest.DaysLeftOnPost--;
+                if (quest.DaysLeftOnPost <= dayLimit) {
+                    list.Remove(quest);
+                }
+            }
+            return list;
         }
 
     }

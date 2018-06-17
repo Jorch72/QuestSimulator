@@ -42,7 +42,7 @@ namespace Rondo.QuestSim.Quests.Sources {
             ReputationGenerator.GenerateName(this, ReputationNameConventions.GROUP);
 
             for(int i = 0; i < Random.Range(MIN_HEROES_PER_FACTION, MAX_HEROES_PER_FACTION + 1); i++) {
-                Heroes.Add(HeroGenerator.GenerateHero());
+                Heroes.Add(HeroGenerator.GenerateHero(this));
             }
         }
     }

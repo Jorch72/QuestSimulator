@@ -1,6 +1,7 @@
 ﻿using Rondo.Generic.Utility;
 using Rondo.QuestSim.Heroes;
 using Rondo.QuestSim.Quests.Rewards;
+using Rondo.QuestSim.Quests.Sources;
 using Rondo.QuestSim.Reputation;
 using System.Collections;
 using System.Collections.Generic;
@@ -20,8 +21,8 @@ namespace Rondo.QuestSim.Quests {
         public int DaysLeftOnPost { get; set; }
         public int DaysLeftOnQuest { get; set; }
 
-        private int AverageExpectedGoldReward { get { return (DifficultyLevel + 1) * 10; } }
-        private float AverageExpectedItemReward { get { return (DifficultyLevel + 1) * 20; } }
+        private int AverageExpectedGoldReward { get { return Mathf.RoundToInt((DifficultyLevel + 1) * 10 * (ObjectiveCount * 0.75f)); } }
+        private float AverageExpectedItemReward { get { return (DifficultyLevel + 1) * 20 * (ObjectiveCount * 0.5f); } }
         private int ExperiencePoints { get { return (DifficultyLevel + 1) * 5 * ObjectiveCount; } }
 
         public QuestInstance(IQuestSource source) {
@@ -39,7 +40,6 @@ namespace Rondo.QuestSim.Quests {
 
             preferenceValue += (hero.QuestPrefRewardGold / AverageExpectedGoldReward) * (GoldReward.RewardValue);
             preferenceValue += (hero.QuestPrefRewardItem / AverageExpectedItemReward) * (GetTotalItemRewardValue());
-
 
             //Difficulty scaler, should be replaced by hero.PowerLevel
             float maxDifficultyDifference = 7;
@@ -63,7 +63,8 @@ namespace Rondo.QuestSim.Quests {
             hero.Experience += ExperiencePoints;
             hero.HeroState = HeroStates.IDLE;
 
-            Debug.Log("Gave " + hero.DisplayName + " " + ExperiencePoints + " exp");
+            QuestSourceFaction faction = HeroManager.GetHeroFaction(hero);
+            ReputationManager.GetReputationTracker(faction).ModifyReputation(ExperiencePoints * 0.1f);
         }
     }
 

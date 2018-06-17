@@ -9,29 +9,28 @@ namespace Rondo.QuestSim.Heroes {
 
     public static class HeroManager {
 
-        private static List<HeroInstance> m_Heroes = new List<HeroInstance>();
+        private static Dictionary<HeroInstance, QuestSourceFaction> m_Heroes = new Dictionary<HeroInstance, QuestSourceFaction>();
 
         public static void Initialize() {
 
         }
 
-        private static HeroInstance AddRandomHero() {
-            HeroInstance newHero = HeroGenerator.GenerateHero();
-            AddHero(newHero);
-            return newHero;
-        }
-
-        public static void AddHero(HeroInstance instance) {
-            if (m_Heroes.Contains(instance)) return;
-            m_Heroes.Add(instance);
+        public static void AddHero(HeroInstance instance, QuestSourceFaction faction) {
+            if (m_Heroes.ContainsKey(instance)) return;
+            m_Heroes.Add(instance, faction);
         }
 
         public static HeroInstance GetRandomHero() {
-            return m_Heroes.GetRandom();
+            return GetAllHeroes().GetRandom();
         }
 
         public static List<HeroInstance> GetAllHeroes() {
-            return m_Heroes;
+            return new List<HeroInstance>(m_Heroes.Keys);
+        }
+
+        public static QuestSourceFaction GetHeroFaction(HeroInstance hero) {
+            if (!m_Heroes.ContainsKey(hero)) return null;
+            return m_Heroes[hero];
         }
 
     }

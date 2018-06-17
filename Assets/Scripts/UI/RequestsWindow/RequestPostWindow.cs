@@ -22,7 +22,7 @@ namespace Rondo.QuestSim.UI.Requests {
         public TMP_InputField goldInputField;
         public TMP_Dropdown itemDropdown;
         public Button addItemButton;
-        public GameObject addedItemTemplate;
+        public GameItemInstanceUI addedItemTemplate;
 
         public Button cancelButton;
         public Button postButton;
@@ -41,6 +41,8 @@ namespace Rondo.QuestSim.UI.Requests {
                 Reset(false);
                 gameObject.SetActive(false);
 
+                InventoryManager.Gold -= m_CurrentRequest.GoldReward.GoldCount;
+
                 QuestManager.Requests.Remove(m_CurrentRequest);
                 QuestManager.PostedQuests.Add(m_CurrentRequest);
 
@@ -56,7 +58,7 @@ namespace Rondo.QuestSim.UI.Requests {
                 int iValue = int.Parse(value);
                 m_CurrentRequest.GoldReward.GoldCount = iValue;
 
-                TestWithHero();
+                postButton.interactable = InventoryManager.Gold >= iValue;
             });
 
             addItemButton.onClick.AddListener(CreateItemEntry);
@@ -88,12 +90,13 @@ namespace Rondo.QuestSim.UI.Requests {
         private void CreateItemEntry() {
             if (m_ItemDropdownSelected == 0) return;
 
-            GameObject entryObj = Instantiate(addedItemTemplate);
+            GameItemInstanceUI entryObj = Instantiate(addedItemTemplate);
             entryObj.transform.SetParent(addedItemTemplate.transform.parent);
-            entryObj.SetActive(true);
+            entryObj.gameObject.SetActive(true);
             addItemButton.transform.parent.SetAsLastSibling();
             GameItem item = InventoryManager.OwnedItems[m_ItemDropdownSelected - 1];
             InventoryManager.MoveItemToReserved(item);
+            entryObj.SetItem(item);
 
             QuestRewardItem rewardInstance = new QuestRewardItem(item);
             m_CurrentRequest.ItemRewards.Add(rewardInstance);
@@ -103,16 +106,16 @@ namespace Rondo.QuestSim.UI.Requests {
 
             UpdateItemDropdown();
             GameItemPopup.Instance.SwitchItemTarget(null);
-
-            TestWithHero();
         }
 
         private void DeleteItemEntry(ItemEntry entry, bool reclaimItem) {
             if (!m_ItemEntries.Contains(entry)) return;
-            Destroy(entry.parent);
-            if(reclaimItem) InventoryManager.MoveItemToOwned(entry.item);
+            Destroy(entry.parent.gameObject);
+            if (reclaimItem) {
+                InventoryManager.MoveItemToOwned(entry.item);
+                m_CurrentRequest.ItemRewards.Remove(entry.reward);
+            }
             m_ItemEntries.Remove(entry);
-            m_CurrentRequest.ItemRewards.Remove(entry.rewardInstance);
 
             UpdateItemDropdown();
         }
@@ -137,19 +140,6 @@ namespace Rondo.QuestSim.UI.Requests {
             }
         }
 
-        private void TestWithHero() {
-            int accept = 0;
-            int deny = 0;
-
-            foreach(HeroInstance hero in HeroManager.GetAllHeroes()) {
-                if (m_CurrentRequest.WouldHeroAccept(hero)) accept++;
-                else deny++;
-            }
-            
-            Debug.Log("Accept = " + accept + ", deny = "+ deny);
-
-        }
-
         public void Reset(bool reclaimItems) {
             goldInputField.text = "0";
             m_ItemDropdownSelected = 0;
@@ -164,21 +154,18 @@ namespace Rondo.QuestSim.UI.Requests {
         }
 
         private class ItemEntry {
-            public GameObject parent;
+            public GameItemInstanceUI parent;
             public GameItem item;
-            public QuestRewardItem rewardInstance;
-            private TextMeshProUGUI title;
+            public QuestRewardItem reward;
             private Button button;
 
-            public ItemEntry(GameObject parent, GameItem item, QuestRewardItem reward, Action<ItemEntry, bool> OnDelete) {
+            public ItemEntry(GameItemInstanceUI parent, GameItem item, QuestRewardItem reward, Action<ItemEntry, bool> OnDelete) {
                 this.parent = parent;
                 this.item = item;
-                this.rewardInstance = reward;
+                this.reward = reward;
 
-                title = parent.GetComponentInChildren<TextMeshProUGUI>(true);
                 button = parent.GetComponentInChildren<Button>(true);
 
-                title.text = item.DisplayName;
                 button.onClick.AddListener(() => {
                     OnDelete(this, true);
                 });

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,9 +7,13 @@ namespace Rondo.QuestSim.Inventory {
 
     public static class InventoryManager {
 
-        public static int Gold { get; set; }
+        public static int Gold { get { return m_Gold; } set { m_Gold = value; OnGoldChange(value); } }
         public static List<GameItem> OwnedItems { get; set; }
         public static List<GameItem> ReservedItems { get; set; }
+
+        public static Action<int> OnGoldChange = delegate { };
+
+        private static int m_Gold = 0;
 
         public static void Initialize() {
             Gold = 0;
@@ -16,7 +21,7 @@ namespace Rondo.QuestSim.Inventory {
             ReservedItems = new List<GameItem>();
 
             for (int i = 0; i < 10; i++) {
-                OwnedItems.Add(GameItemGenerator.GenerateItem( GameItemRarity.UNKNOWN, Random.Range(0f, 1f)));
+                OwnedItems.Add(GameItemGenerator.GenerateItem( GameItemRarity.UNKNOWN, UnityEngine.Random.Range(0f, 1f)));
             }
         }
 

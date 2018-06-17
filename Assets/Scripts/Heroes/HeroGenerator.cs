@@ -12,7 +12,7 @@ namespace Rondo.QuestSim.Heroes {
 
     public static class HeroGenerator {
 
-        public static HeroInstance GenerateHero(bool isTemporaryHero = false) {
+        public static HeroInstance GenerateHero(QuestSourceFaction faction = null) {
             HeroInstance newHero = new HeroInstance();
 
             newHero.DisplayName = NameDatabase.GetHeroName();
@@ -20,7 +20,7 @@ namespace Rondo.QuestSim.Heroes {
             newHero.Class = EnumUtility.GetRandomEnumValue<HeroClasses>();
             newHero.Experience = UnityEngine.Random.Range(0, 100);
             newHero.EquipmentLevel = UnityEngine.Random.Range(0, 100);
-            newHero.HeroState = UnityEngine.Random.Range(0, 2) == 0 ? HeroStates.UNDISCOVERED : HeroStates.IDLE;
+            newHero.HeroState = HeroStates.IDLE;
 
             Dictionary<QuestTypes, float> tempQuestValues = new Dictionary<QuestTypes, float>();
             float tempQuestValuesTotal = 0;
@@ -35,7 +35,9 @@ namespace Rondo.QuestSim.Heroes {
             newHero.QuestPrefRewardGold = UnityEngine.Random.Range(0f, 1f);
             newHero.QuestPrefRewardItem = 1 - newHero.QuestPrefRewardGold;
 
-            if(!isTemporaryHero) HeroManager.AddHero(newHero);
+            if (faction != null) {
+                HeroManager.AddHero(newHero, faction);
+            }
 
             return newHero;
         }

@@ -378,7 +378,21 @@ namespace Rondo.QuestSim.Utility {
                     "has",
                     "tryn",
                     "myr",
-                    "mae"
+                    "mae",
+                    "as",
+                    "te",
+                    "ra",
+                    "es",
+                    "ta",
+                    "he",
+                    "to",
+                    "sko",
+                    "ke",
+                    "na",
+                    "sa",
+                    "se",
+                    "po",
+                    "pa"
                 };
 
             string[] surNameSyllables = new string[] {

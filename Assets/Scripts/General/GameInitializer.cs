@@ -17,10 +17,8 @@ namespace Rondo.QuestSim.General {
             InventoryManager.Initialize();
         }
 
-        private void Update() {
-            if (Input.GetKeyDown(KeyCode.Q)) {
-                DayManager.EndDay();
-            }
+        private void Start() {
+            InventoryManager.Gold = 100;
         }
 
     }
