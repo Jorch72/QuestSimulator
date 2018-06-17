@@ -1,12 +1,9 @@
 ﻿using Rondo.Generic.Utility;
+using Rondo.QuestSim.Gameplay;
 using Rondo.QuestSim.Heroes;
 using Rondo.QuestSim.Inventory;
 using Rondo.QuestSim.Quests;
-using Rondo.QuestSim.Quests.Sources;
 using Rondo.QuestSim.Reputation;
-using Rondo.QuestSim.UI.Reputation;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Rondo.QuestSim.General {
@@ -18,6 +15,16 @@ namespace Rondo.QuestSim.General {
             ReputationManager.Initialize();
             QuestManager.Initialize();
             InventoryManager.Initialize();
+        }
+
+        private void Update() {
+            if (Input.GetKeyDown(KeyCode.Q)) {
+                DayManager.EndDay();
+            }
+
+            if (Input.GetKeyDown(KeyCode.W)) {
+                DayManager.NextDay();
+            }
         }
 
     }

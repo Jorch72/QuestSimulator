@@ -20,7 +20,7 @@ namespace Rondo.QuestSim.Heroes {
             newHero.Class = EnumUtility.GetRandomEnumValue<HeroClasses>();
             newHero.Experience = UnityEngine.Random.Range(0, 1000);
             newHero.EquipmentLevel = UnityEngine.Random.Range(0, 100);
-            newHero.IsDiscovered = UnityEngine.Random.Range(0, 2) == 0 ? true : false;
+            newHero.HeroState = UnityEngine.Random.Range(0, 2) == 0 ? HeroStates.UNDISCOVERED : HeroStates.IDLE;
 
             Dictionary<QuestTypes, float> tempQuestValues = new Dictionary<QuestTypes, float>();
             float tempQuestValuesTotal = 0;

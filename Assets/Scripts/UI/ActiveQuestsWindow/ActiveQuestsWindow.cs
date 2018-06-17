@@ -44,7 +44,7 @@ namespace Rondo.QuestSim.UI.ActiveQuests {
                 newInstance.ApplyQuestChain(quest);
             }
 
-            foreach (QuestInstance quest in QuestManager.ActiveQuests) {
+            foreach (QuestInstance quest in QuestManager.ActiveQuests.Keys) {
                 ActiveQuestInstance newInstance = Instantiate(instancePrefab);
                 newInstance.GetComponent<RectTransform>().SetParent(activeQuestsParent);
                 newInstance.ApplyQuestChain(quest);

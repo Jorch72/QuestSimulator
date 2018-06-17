@@ -22,7 +22,7 @@ namespace Rondo.QuestSim.Quests {
 
         private int AverageExpectedGoldReward { get { return (DifficultyLevel + 1) * 10; } }
         private float AverageExpectedItemReward { get { return (DifficultyLevel + 1) * 20; } }
-
+        private int ExperiencePoints { get { return (DifficultyLevel + 1) * 5 * ObjectiveCount; } }
 
         public QuestInstance(IQuestSource source) {
             QuestSource = source;
@@ -40,7 +40,8 @@ namespace Rondo.QuestSim.Quests {
             preferenceValue += (hero.QuestPrefRewardGold / AverageExpectedGoldReward) * (GoldReward.RewardValue);
             preferenceValue += (hero.QuestPrefRewardItem / AverageExpectedItemReward) * (GetTotalItemRewardValue());
 
-            //Difficulty scaler
+
+            //Difficulty scaler, should be replaced by hero.PowerLevel
             float maxDifficultyDifference = 7;
             preferenceValue *= Mathf.Pow((maxDifficultyDifference - Mathf.Abs(hero.QuestPrefDifficulty - DifficultyLevel)) / maxDifficultyDifference, 1.5f);
 
@@ -49,10 +50,20 @@ namespace Rondo.QuestSim.Quests {
 
         private float GetTotalItemRewardValue() {
             float value = 0;
-            foreach(IQuestReward itemReward in ItemRewards) {
+            foreach(QuestRewardItem itemReward in ItemRewards) {
                 value += itemReward.RewardValue;
             }
             return value;
+        }
+
+        public void CompleteQuest(HeroInstance hero) {
+            foreach (QuestRewardItem itemReward in ItemRewards) {
+                hero.EquipmentLevel += itemReward.Item.OverallPower;
+            }
+            hero.Experience += ExperiencePoints;
+            hero.HeroState = HeroStates.IDLE;
+
+            Debug.Log("Gave " + hero.DisplayName + " " + ExperiencePoints + " exp");
         }
     }
 

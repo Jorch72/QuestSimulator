@@ -1,4 +1,5 @@
 ﻿using Rondo.Generic.Utility;
+using Rondo.QuestSim.Heroes;
 using Rondo.QuestSim.Quests.Sources;
 using Rondo.QuestSim.Reputation;
 using System.Collections;
@@ -11,7 +12,7 @@ namespace Rondo.QuestSim.Quests {
 
         public static List<QuestInstance> Requests { get; set; }
         public static List<QuestInstance> PostedQuests { get; set; }
-        public static List<QuestInstance> ActiveQuests { get; set; }
+        public static Dictionary<QuestInstance, HeroInstance> ActiveQuests { get; set; }
 
         private static WeightedRandom<int> m_QuestSourceChoser;
         private static WeightedRandom<int> m_QuestSizeChoser;
@@ -19,7 +20,7 @@ namespace Rondo.QuestSim.Quests {
         public static void Initialize() {
             Requests = new List<QuestInstance>();
             PostedQuests = new List<QuestInstance>();
-            ActiveQuests = new List<QuestInstance>();
+            ActiveQuests = new Dictionary<QuestInstance, HeroInstance>();
 
             m_QuestSourceChoser = new WeightedRandom<int>(
                 new int[3] { 0, 1, 2 },
