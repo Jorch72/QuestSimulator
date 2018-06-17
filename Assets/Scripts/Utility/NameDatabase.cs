@@ -367,7 +367,18 @@ namespace Rondo.QuestSim.Utility {
                     "ne",
                     "ro",
                     "dan",
-                    "te"
+                    "te",
+                    "cho",
+                    "cha",
+                    "en",
+                    "gal",
+                    "ill",
+                    "id",
+                    "art",
+                    "has",
+                    "tryn",
+                    "myr",
+                    "mae"
                 };
 
             string[] surNameSyllables = new string[] {
@@ -394,7 +405,46 @@ namespace Rondo.QuestSim.Utility {
                     "kiz",
                     "gomi",
                     "gehr",
-                    "man"
+                    "lush",
+                    "ota",
+                    "olda",
+                    "vol"
+                };
+
+            string[] surNameEndings = new string[] {
+                    "man",
+                    "son",
+                    "holm",
+                    "hall",
+                    "ham",
+                    "ston",
+                    "sey",
+                    "ford",
+                    "ton",
+                    "ley",
+                    "don",
+                    "den",
+                    "say",
+                    "lowe",
+                    "cett",
+                    "lin",
+                    "tun",
+                    "lyn",
+                    "dra",
+                    "dulm",
+                    "dil",
+                    "mor",
+                    "ian",
+                    "zin",
+                    "dral",
+                    "nar",
+                    "er",
+                    "ysh",
+                    "shel",
+                    "rus",
+                    "lix",
+                    "eth",
+                    "dras"
                 };
 
             string firstName = "";
@@ -403,17 +453,15 @@ namespace Rondo.QuestSim.Utility {
             for (int i = 0; i < firstNameSyllableCount; i++) {
                 firstName += firstNameSyllables[Random.Range(0, firstNameSyllables.Length)];
                 if (Random.Range(0, 15) == 0 && i != firstNameSyllableCount - 1) {
-                    if (Random.Range(0, 2) == 0) {
-                        firstName += "'";
-                    } else {
-                        firstName += "-";
-                    }
+                    if (Random.Range(0, 2) == 0) firstName += "'";
+                    else firstName += "-";
                 }
             }
 
             int surNameSyllableCount = m_HeroNameSurNameLenghts.GetRandomValue();
             for (int i = 0; i < surNameSyllableCount; i++) {
-                surName += surNameSyllables[Random.Range(0, surNameSyllables.Length)];
+                if (i == surNameSyllableCount - 1) surName += surNameEndings[Random.Range(0, surNameEndings.Length)];
+                else surName += surNameSyllables[Random.Range(0, surNameSyllables.Length)];
                 if (Random.Range(0, 15) == 0 && i != surNameSyllableCount - 1) surName += "'";
             }
 
