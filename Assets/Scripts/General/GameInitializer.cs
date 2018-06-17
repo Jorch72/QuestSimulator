@@ -21,10 +21,6 @@ namespace Rondo.QuestSim.General {
             if (Input.GetKeyDown(KeyCode.Q)) {
                 DayManager.EndDay();
             }
-
-            if (Input.GetKeyDown(KeyCode.W)) {
-                DayManager.NextDay();
-            }
         }
 
     }

@@ -29,8 +29,7 @@ namespace Rondo.QuestSim.UI.Reputation {
         private void UpdateProgress() {
             nameText.text = m_Hero.DisplayName;
             classText.text = m_Hero.ClassProgress;
-            int remainder = m_Hero.Experience % 20;
-            levelProgressFill.localScale = new Vector3(remainder / 20f, levelProgressFill.localScale.y, levelProgressFill.localScale.z);
+            levelProgressFill.localScale = new Vector3(m_Hero.LevelProgress, levelProgressFill.localScale.y, levelProgressFill.localScale.z);
         }
     }
 

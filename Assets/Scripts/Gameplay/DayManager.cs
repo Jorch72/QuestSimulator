@@ -15,14 +15,14 @@ namespace Rondo.QuestSim.Gameplay {
             CurrentDay = 1;
         }
 
-        public static void NextDay() {
+        public static void EndDay() {
             //Return heroes
             List<QuestInstance> activeQuestList = new List<QuestInstance>(QuestManager.ActiveQuests.Keys);
-            for(int i = activeQuestList.Count - 1; i >= 0; i--) {
+            for (int i = activeQuestList.Count - 1; i >= 0; i--) {
                 QuestInstance activeQuest = activeQuestList[i];
                 activeQuest.DaysLeftOnQuest--;
 
-                if(activeQuest.DaysLeftOnQuest <= 0) {
+                if (activeQuest.DaysLeftOnQuest <= 0) {
                     activeQuest.CompleteQuest(QuestManager.ActiveQuests[activeQuest]);
                     QuestManager.ActiveQuests.Remove(activeQuest);
                 }
@@ -31,12 +31,8 @@ namespace Rondo.QuestSim.Gameplay {
             CurrentDay++;
 
             OnNextDay();
-        }
 
-        public static void EndDay() {
-            //Show windows to pick heroes for quests
-            
-            foreach(QuestInstance postedQuest in QuestManager.PostedQuests) {
+            foreach (QuestInstance postedQuest in QuestManager.PostedQuests) {
                 QuestManager.ActiveQuests.Add(postedQuest, HeroManager.GetRandomHero());
             }
 
