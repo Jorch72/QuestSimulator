@@ -65,7 +65,7 @@ namespace Rondo.QuestSim.Heroes {
             }
 
             m_Level = currentLevel;
-            m_LevelProgress = ((float)lastExpRequired - totalExpLeft) / expRequired;
+            m_LevelProgress = ((float)expRequired - totalExpLeft) / expRequired;
         }
 
     }
