@@ -1,4 +1,6 @@
 ﻿using Rondo.Generic.Utility;
+using Rondo.QuestSim.Quests;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Rondo.QuestSim.Heroes {
@@ -16,10 +18,15 @@ namespace Rondo.QuestSim.Heroes {
         public string ClassProgress { get { return IsDiscovered ? ("Lv" + Level + " " + Class.ToString().ToCamelCase()) : "???"; } }
         public int PowerLevel { get { return Mathf.RoundToInt((EquipmentLevel * 0.5f) + (Level + 1)); } }
 
+        public Dictionary<QuestTypes, float> QuestTypePreferences { get; set; }
+        public float QuestPrefDifficulty { get; set; }
+        public float QuestPrefRewardItem { get; set; }
+        public float QuestPrefRewardGold { get; set; }
+
         private string m_DisplayName;
 
         public HeroInstance() {
-
+            QuestTypePreferences = new Dictionary<QuestTypes, float>();
         }
 
         private string GetDisplayName() {

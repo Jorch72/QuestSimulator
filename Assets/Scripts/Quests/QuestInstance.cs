@@ -11,6 +11,7 @@ namespace Rondo.QuestSim.Quests {
         public string DisplayName { get; set; }
         public int ObjectiveCount { get; set; }
         public IQuestSource QuestSource { get; private set; }
+        public QuestTypes QuestType { get; set; }
         public int DifficultyLevel { get; set; }
         public QuestRewardGold GoldReward { get; set; }
         public List<IQuestReward> ItemRewards { get; set; }

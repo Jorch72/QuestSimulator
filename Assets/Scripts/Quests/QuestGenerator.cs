@@ -1,4 +1,5 @@
-﻿using Rondo.QuestSim.Reputation;
+﻿using Rondo.Generic.Utility;
+using Rondo.QuestSim.Reputation;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,6 +12,7 @@ namespace Rondo.QuestSim.Quests {
             QuestInstance chain = new QuestInstance(questSource);
             chain.ObjectiveCount = objectiveCount;
             chain.DifficultyLevel = UnityEngine.Random.Range(0, questSource.MaxQuestDifficulty);
+            chain.QuestType = EnumUtility.GetRandomEnumValue<QuestTypes>();
             return chain;
         }
 

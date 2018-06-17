@@ -1,7 +1,9 @@
 ﻿using Rondo.Generic.Utility;
+using Rondo.QuestSim.Quests;
 using Rondo.QuestSim.Quests.Sources;
 using Rondo.QuestSim.UI.Reputation;
 using Rondo.QuestSim.Utility;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,11 +16,24 @@ namespace Rondo.QuestSim.Heroes {
             HeroInstance newHero = new HeroInstance();
 
             newHero.DisplayName = NameDatabase.GetHeroName();
-            newHero.Nickname = Random.Range(0, 4) == 0 ? NameDatabase.GetCompoundName() : "";
+            newHero.Nickname = UnityEngine.Random.Range(0, 4) == 0 ? NameDatabase.GetCompoundName() : "";
             newHero.Class = EnumUtility.GetRandomEnumValue<HeroClasses>();
-            newHero.Experience = Random.Range(0, 1000);
-            newHero.EquipmentLevel = Random.Range(0, 100);
-            newHero.IsDiscovered = Random.Range(0, 2) == 0 ? true : false;
+            newHero.Experience = UnityEngine.Random.Range(0, 1000);
+            newHero.EquipmentLevel = UnityEngine.Random.Range(0, 100);
+            newHero.IsDiscovered = UnityEngine.Random.Range(0, 2) == 0 ? true : false;
+
+            Dictionary<QuestTypes, float> tempQuestValues = new Dictionary<QuestTypes, float>();
+            float tempQuestValuesTotal = 0;
+            foreach (QuestTypes questType in Enum.GetValues(typeof(QuestTypes))) {
+                tempQuestValues.Add(questType, UnityEngine.Random.Range(0f, 10f));
+                tempQuestValuesTotal = tempQuestValues[questType];
+            }
+            foreach (QuestTypes questType in Enum.GetValues(typeof(QuestTypes))) {
+                newHero.QuestTypePreferences[questType] = tempQuestValues[questType] / tempQuestValuesTotal;
+            }
+
+            newHero.QuestPrefRewardGold = UnityEngine.Random.Range(0f, 1f);
+            newHero.QuestPrefRewardItem = 1 - newHero.QuestPrefRewardGold;
 
             return newHero;
         }
