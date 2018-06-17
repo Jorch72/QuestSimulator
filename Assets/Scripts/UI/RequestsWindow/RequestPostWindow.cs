@@ -1,4 +1,6 @@
-﻿using Rondo.QuestSim.Inventory;
+﻿using Rondo.Generic.Utility;
+using Rondo.QuestSim.Heroes;
+using Rondo.QuestSim.Inventory;
 using Rondo.QuestSim.Quests;
 using Rondo.QuestSim.Quests.Rewards;
 using Rondo.QuestSim.Reputation;
@@ -36,10 +38,6 @@ namespace Rondo.QuestSim.UI.Requests {
             });
 
             postButton.onClick.AddListener(() => {
-                foreach(ItemEntry itemReward in m_ItemEntries) {
-                    m_CurrentRequest.ItemRewards.Add(new QuestRewardItem(itemReward.item));
-                }
-
                 Reset(false);
                 gameObject.SetActive(false);
 
@@ -57,6 +55,8 @@ namespace Rondo.QuestSim.UI.Requests {
                 }
                 int iValue = int.Parse(value);
                 m_CurrentRequest.GoldReward.GoldCount = iValue;
+
+                TestWithHero();
             });
 
             addItemButton.onClick.AddListener(CreateItemEntry);
@@ -95,11 +95,16 @@ namespace Rondo.QuestSim.UI.Requests {
             GameItem item = InventoryManager.OwnedItems[m_ItemDropdownSelected - 1];
             InventoryManager.MoveItemToReserved(item);
 
-            ItemEntry newEntry = new ItemEntry(entryObj, item, DeleteItemEntry);
+            QuestRewardItem rewardInstance = new QuestRewardItem(item);
+            m_CurrentRequest.ItemRewards.Add(rewardInstance);
+
+            ItemEntry newEntry = new ItemEntry(entryObj, item, rewardInstance, DeleteItemEntry);
             m_ItemEntries.Add(newEntry);
 
             UpdateItemDropdown();
             GameItemPopup.Instance.SwitchItemTarget(null);
+
+            TestWithHero();
         }
 
         private void DeleteItemEntry(ItemEntry entry, bool reclaimItem) {
@@ -107,6 +112,7 @@ namespace Rondo.QuestSim.UI.Requests {
             Destroy(entry.parent);
             if(reclaimItem) InventoryManager.MoveItemToOwned(entry.item);
             m_ItemEntries.Remove(entry);
+            m_CurrentRequest.ItemRewards.Remove(entry.rewardInstance);
 
             UpdateItemDropdown();
         }
@@ -131,6 +137,19 @@ namespace Rondo.QuestSim.UI.Requests {
             }
         }
 
+        private void TestWithHero() {
+            int accept = 0;
+            int deny = 0;
+
+            foreach(HeroInstance hero in HeroManager.GetAllHeroes()) {
+                if (m_CurrentRequest.WouldHeroAccept(hero)) accept++;
+                else deny++;
+            }
+            
+            Debug.Log("Accept = " + accept + ", deny = "+ deny);
+
+        }
+
         public void Reset(bool reclaimItems) {
             goldInputField.text = "0";
             m_ItemDropdownSelected = 0;
@@ -147,12 +166,14 @@ namespace Rondo.QuestSim.UI.Requests {
         private class ItemEntry {
             public GameObject parent;
             public GameItem item;
+            public QuestRewardItem rewardInstance;
             private TextMeshProUGUI title;
             private Button button;
 
-            public ItemEntry(GameObject parent, GameItem item, Action<ItemEntry, bool> OnDelete) {
+            public ItemEntry(GameObject parent, GameItem item, QuestRewardItem reward, Action<ItemEntry, bool> OnDelete) {
                 this.parent = parent;
                 this.item = item;
+                this.rewardInstance = reward;
 
                 title = parent.GetComponentInChildren<TextMeshProUGUI>(true);
                 button = parent.GetComponentInChildren<Button>(true);

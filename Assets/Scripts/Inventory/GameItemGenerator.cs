@@ -12,7 +12,7 @@ namespace Rondo.QuestSim.Inventory {
             GameItemRarity rarity = GameItemRarity.UNKNOWN,
             float quality = 0.5f) {
 
-            if (rarity == GameItemRarity.UNKNOWN) rarity = EnumUtility.GetRandomEnumValue<GameItemRarity>();
+            while (rarity == GameItemRarity.UNKNOWN) rarity = EnumUtility.GetRandomEnumValue<GameItemRarity>();
 
             GameItem newItem = new GameItem(rarity, quality);
 

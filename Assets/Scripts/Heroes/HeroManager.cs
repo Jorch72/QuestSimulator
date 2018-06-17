@@ -30,6 +30,10 @@ namespace Rondo.QuestSim.Heroes {
             return m_Heroes.GetRandom();
         }
 
+        public static List<HeroInstance> GetAllHeroes() {
+            return m_Heroes;
+        }
+
     }
 
 }

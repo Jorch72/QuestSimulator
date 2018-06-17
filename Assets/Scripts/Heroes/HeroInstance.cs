@@ -19,7 +19,7 @@ namespace Rondo.QuestSim.Heroes {
         public int PowerLevel { get { return Mathf.RoundToInt((EquipmentLevel * 0.5f) + (Level + 1)); } }
 
         public Dictionary<QuestTypes, float> QuestTypePreferences { get; set; }
-        public float QuestPrefDifficulty { get; set; }
+        public int QuestPrefDifficulty { get { return Level / 10; } }
         public float QuestPrefRewardItem { get; set; }
         public float QuestPrefRewardGold { get; set; }
 

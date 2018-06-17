@@ -12,11 +12,11 @@ namespace Rondo.QuestSim.Heroes {
 
     public static class HeroGenerator {
 
-        public static HeroInstance GenerateHero() {
+        public static HeroInstance GenerateHero(bool isTemporaryHero = false) {
             HeroInstance newHero = new HeroInstance();
 
             newHero.DisplayName = NameDatabase.GetHeroName();
-            newHero.Nickname = UnityEngine.Random.Range(0, 4) == 0 ? NameDatabase.GetCompoundName() : "";
+            //newHero.Nickname = UnityEngine.Random.Range(0, 4) == 0 ? NameDatabase.GetCompoundName() : "";
             newHero.Class = EnumUtility.GetRandomEnumValue<HeroClasses>();
             newHero.Experience = UnityEngine.Random.Range(0, 1000);
             newHero.EquipmentLevel = UnityEngine.Random.Range(0, 100);
@@ -34,6 +34,8 @@ namespace Rondo.QuestSim.Heroes {
 
             newHero.QuestPrefRewardGold = UnityEngine.Random.Range(0f, 1f);
             newHero.QuestPrefRewardItem = 1 - newHero.QuestPrefRewardGold;
+
+            if(!isTemporaryHero) HeroManager.AddHero(newHero);
 
             return newHero;
         }

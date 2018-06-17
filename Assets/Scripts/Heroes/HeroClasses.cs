@@ -13,7 +13,13 @@ namespace Rondo.QuestSim.Heroes {
         SORCERER,
         ROGUE,
         WARLOCK,
-        HUNTER
+        HUNTER,
+        PALADIN,
+        BARBARIAN,
+        PRIEST,
+        DRUID,
+        MONK,
+        WITCH_DOCTOR
     }
 
 }
