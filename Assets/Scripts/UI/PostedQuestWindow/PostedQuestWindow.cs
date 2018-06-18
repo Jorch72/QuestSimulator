@@ -27,13 +27,17 @@ namespace Rondo.QuestSim.UI.PostedQuests {
         public Button cancelButton;
         public Button acceptButton;
 
+        [Header("Mode objects")]
+        public GameObject heroSelectParent;
+        public GameObject heroSelectedParent;
+
         public Action OnWindowClose = delegate { };
 
         private QuestInstance m_CurrentQuest;
         private List<HeroInstance> m_AvailableHeroes = new List<HeroInstance>();
-        private bool m_WatchOnlyMode = false;
+        private PostedQuestMode m_WindowMode = PostedQuestMode.ACTIVE_REVIEW;
         private List<GameObject> m_ItemsToDelete = new List<GameObject>();
-        private HeroInstance m_SelectedHero = null;
+        private ReputationHeroInstanceUI m_SelectedHero = null;
 
         void Start() {
             closeButton.onClick.AddListener(() => {
@@ -45,6 +49,7 @@ namespace Rondo.QuestSim.UI.PostedQuests {
             });
 
             cancelButton.onClick.AddListener(() => {
+                m_CurrentQuest.RefundQuestRewards(true, true);
                 QuestManager.PostedQuests.Remove(m_CurrentQuest);
                 QuestManager.Requests.Add(m_CurrentQuest);
                 CloseWindow();
@@ -54,7 +59,7 @@ namespace Rondo.QuestSim.UI.PostedQuests {
             acceptButton.onClick.AddListener(() => {
                 if (m_SelectedHero == null) return;
                 QuestManager.PostedQuests.Remove(m_CurrentQuest);
-                QuestManager.ActiveQuests.Add(m_CurrentQuest, m_SelectedHero);
+                QuestManager.ActiveQuests.Add(m_CurrentQuest, m_SelectedHero.Hero);
                 CloseWindow();
             });
 
@@ -63,13 +68,19 @@ namespace Rondo.QuestSim.UI.PostedQuests {
             gameObject.SetActive(false);
         }
 
+        private void Update() {
+            if (m_SelectedHero == null) return;
+            float scale = Mathf.Sin(Time.time * 3).Map(-1, 1, 1, 1.1f);
+            m_SelectedHero.GetComponent<RectTransform>().GetChild(0).localScale = new Vector3(scale, scale, scale);
+        }
+
         private void CloseWindow() {
             gameObject.SetActive(false);
             OnWindowClose();
         }
 
-        public void OpenWindow(QuestInstance quest, bool watchOnlyMode) {
-            m_WatchOnlyMode = watchOnlyMode;
+        public void OpenWindow(QuestInstance quest, PostedQuestMode mode) {
+            m_WindowMode = mode;
             Reset();
             if (quest == m_CurrentQuest) {
                 gameObject.SetActive(!gameObject.activeSelf);
@@ -78,16 +89,25 @@ namespace Rondo.QuestSim.UI.PostedQuests {
             }
             m_CurrentQuest = quest;
 
-            if (m_WatchOnlyMode) {
-                closeButton.gameObject.SetActive(true);
-                skipButton.gameObject.SetActive(false);
-                cancelButton.gameObject.SetActive(true);
-                acceptButton.gameObject.SetActive(false);
-            } else {
-                closeButton.gameObject.SetActive(false);
-                skipButton.gameObject.SetActive(true);
-                cancelButton.gameObject.SetActive(true);
-                acceptButton.gameObject.SetActive(true);
+            switch (mode) {
+                case PostedQuestMode.HERO_SELECT:
+                    closeButton.gameObject.SetActive(false);
+                    skipButton.gameObject.SetActive(true);
+                    cancelButton.gameObject.SetActive(true);
+                    acceptButton.gameObject.SetActive(true);
+                    break;
+                case PostedQuestMode.POSTED_REVIEW:
+                    closeButton.gameObject.SetActive(true);
+                    skipButton.gameObject.SetActive(false);
+                    cancelButton.gameObject.SetActive(true);
+                    acceptButton.gameObject.SetActive(false);
+                    break;
+                case PostedQuestMode.ACTIVE_REVIEW:
+                    closeButton.gameObject.SetActive(true);
+                    skipButton.gameObject.SetActive(false);
+                    cancelButton.gameObject.SetActive(true);
+                    acceptButton.gameObject.SetActive(false);
+                    break;
             }
 
 
@@ -104,15 +124,27 @@ namespace Rondo.QuestSim.UI.PostedQuests {
                 m_ItemsToDelete.Add(newInstance.gameObject);
             }
 
-            if (m_WatchOnlyMode) {
-                heroInstanceReference.transform.parent.gameObject.SetActive(false);
-                return;
-            } else {
-                heroInstanceReference.transform.parent.gameObject.SetActive(true);
+            switch (mode) {
+                case PostedQuestMode.HERO_SELECT:
+                    heroSelectParent.SetActive(true);
+                    heroSelectedParent.SetActive(false);
+                    FindPotentialHeroes();
+                    break;
+                case PostedQuestMode.ACTIVE_REVIEW:
+                    heroSelectParent.SetActive(false);
+                    heroSelectedParent.SetActive(true);
+                    FindActiveHero();
+                    break;
+                case PostedQuestMode.POSTED_REVIEW:
+                    heroSelectParent.SetActive(false);
+                    heroSelectedParent.SetActive(false);
+                    break;
             }
+        }
 
+        private void FindPotentialHeroes() {
             foreach (HeroInstance hero in HeroManager.GetAllHeroes()) {
-                if (quest.WouldHeroAccept(hero)) m_AvailableHeroes.Add(hero);
+                if (m_CurrentQuest.WouldHeroAccept(hero)) m_AvailableHeroes.Add(hero);
             }
 
             foreach (HeroInstance hero in m_AvailableHeroes) {
@@ -121,8 +153,27 @@ namespace Rondo.QuestSim.UI.PostedQuests {
                 newInstance.transform.SetParent(heroInstanceReference.transform.parent);
                 newInstance.gameObject.SetActive(true);
                 newInstance.transform.SetAsLastSibling();
+
+                //Add button func
+                newInstance.gameObject.AddComponent<Button>().onClick.AddListener(() => {
+                    Vector2 delta;
+                    if (m_SelectedHero != null) {
+                        delta = m_SelectedHero.GetComponent<RectTransform>().sizeDelta;
+                        m_SelectedHero.GetComponent<RectTransform>().sizeDelta = new Vector2(delta.x, 25);
+                        m_SelectedHero.GetComponent<RectTransform>().GetChild(0).localScale = new Vector3(1, 1, 1);
+                    }
+                    m_SelectedHero = newInstance;
+
+                    delta = m_SelectedHero.GetComponent<RectTransform>().sizeDelta;
+                    m_SelectedHero.GetComponent<RectTransform>().sizeDelta = new Vector2(delta.x, 45);
+                });
+
                 m_ItemsToDelete.Add(newInstance.gameObject);
             }
+        }
+
+        private void FindActiveHero() {
+            heroSelectedParent.GetComponentInChildren<ReputationHeroInstanceUI>().ApplyHero(QuestManager.ActiveQuests[m_CurrentQuest]);
         }
 
         public void Reset() {
@@ -132,6 +183,12 @@ namespace Rondo.QuestSim.UI.PostedQuests {
                 Destroy(obj);
             }
             m_ItemsToDelete.Clear();
+        }
+
+        public enum PostedQuestMode {
+            HERO_SELECT,
+            POSTED_REVIEW,
+            ACTIVE_REVIEW
         }
 
     }

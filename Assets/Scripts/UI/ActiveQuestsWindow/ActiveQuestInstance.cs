@@ -27,7 +27,13 @@ namespace Rondo.QuestSim.UI.ActiveQuests {
         }
 
         private void OpenQuestWindow() {
-            PostedQuestWindow.Instance.OpenWindow(m_QuestInstance, false);
+            PostedQuestWindow.PostedQuestMode postMode;
+            if (QuestManager.PostedQuests.Contains(m_QuestInstance)) {
+                postMode = PostedQuestWindow.PostedQuestMode.POSTED_REVIEW;
+            } else {
+                postMode = PostedQuestWindow.PostedQuestMode.ACTIVE_REVIEW;
+            }
+            PostedQuestWindow.Instance.OpenWindow(m_QuestInstance, postMode);
         }
 
         public void ApplyQuestChain(QuestInstance chain) {

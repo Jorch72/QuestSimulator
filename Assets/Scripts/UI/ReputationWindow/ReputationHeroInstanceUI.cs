@@ -13,23 +13,23 @@ namespace Rondo.QuestSim.UI.Reputation {
         public TextMeshProUGUI classText;
         public RectTransform levelProgressFill;
 
-        private HeroInstance m_Hero;
+        public HeroInstance Hero { get; private set; }
 
         void OnDestroy() {
-            m_Hero.OnExperienceChange -= UpdateProgress;
+            Hero.OnExperienceChange -= UpdateProgress;
         }
 
         public void ApplyHero(HeroInstance hero) {
-            m_Hero = hero;
-            m_Hero.OnExperienceChange += UpdateProgress;
+            Hero = hero;
+            Hero.OnExperienceChange += UpdateProgress;
 
             UpdateProgress();
         }
 
         private void UpdateProgress() {
-            nameText.text = m_Hero.DisplayName;
-            classText.text = m_Hero.ClassProgress;
-            levelProgressFill.localScale = new Vector3(m_Hero.LevelProgress, levelProgressFill.localScale.y, levelProgressFill.localScale.z);
+            nameText.text = Hero.DisplayName;
+            classText.text = Hero.ClassProgress;
+            levelProgressFill.localScale = new Vector3(Hero.LevelProgress, levelProgressFill.localScale.y, levelProgressFill.localScale.z);
         }
     }
 

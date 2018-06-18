@@ -1,5 +1,6 @@
 ﻿using Rondo.Generic.Utility;
 using Rondo.QuestSim.Heroes;
+using Rondo.QuestSim.Inventory;
 using Rondo.QuestSim.Quests.Rewards;
 using Rondo.QuestSim.Quests.Sources;
 using Rondo.QuestSim.Reputation;
@@ -65,6 +66,20 @@ namespace Rondo.QuestSim.Quests {
 
             QuestSourceFaction faction = HeroManager.GetHeroFaction(hero);
             ReputationManager.GetReputationTracker(faction).ModifyReputation(ExperiencePoints * 0.1f);
+
+            InventoryManager.Gold += Mathf.RoundToInt(AverageExpectedGoldReward * 1.5f * Random.Range(0.8f, 1.2f));
+        }
+
+        public void RefundQuestRewards(bool refundGold, bool refundItems) {
+            if (refundGold) {
+                InventoryManager.Gold += GoldReward.GoldCount;
+            }
+
+            if (refundItems) {
+                foreach (QuestRewardItem itemReward in ItemRewards) {
+                    InventoryManager.MoveItemToOwned(itemReward.Item);
+                }
+            }
         }
     }
 
