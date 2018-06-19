@@ -14,10 +14,6 @@ namespace Rondo.QuestSim.Quests.Rewards {
         public QuestRewardItem(GameItem item) {
             Item = item;
         }
-
-        public void GiveToHero() {
-            
-        }
     }
 
 }

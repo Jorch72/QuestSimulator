@@ -1,6 +1,7 @@
 ﻿using Rondo.Generic.Utility;
 using Rondo.QuestSim.Heroes;
 using Rondo.QuestSim.Quests;
+using Rondo.QuestSim.UI.General;
 using Rondo.QuestSim.UI.PostedQuests;
 using System;
 using System.Collections.Generic;
@@ -67,6 +68,8 @@ namespace Rondo.QuestSim.Gameplay {
 
             QuestManager.PostedQuests = UpdateQuestTimeLimits(QuestManager.PostedQuests, 0);
             QuestManager.Requests = UpdateQuestTimeLimits(QuestManager.Requests, 1);
+
+            NightFadeUI.Instance.Disable(()=> { });
         }
 
         private List<QuestInstance> UpdateQuestTimeLimits(List<QuestInstance> list, int dayLimit) {

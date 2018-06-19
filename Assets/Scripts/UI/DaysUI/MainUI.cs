@@ -1,5 +1,6 @@
 ﻿using Rondo.QuestSim.Gameplay;
 using Rondo.QuestSim.Inventory;
+using Rondo.QuestSim.UI.General;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -17,13 +18,17 @@ namespace Rondo.QuestSim.UI.Main {
         public TextMeshProUGUI daysText;
         public Button endDayButton;
 
+        [Header("Stars")]
+        public TextMeshProUGUI starsText;
+
         private void Start() {
             endDayButton.onClick.AddListener(()=> {
-                DayManager.Instance.EndDay();
+                NightFadeUI.Instance.Enable(DayManager.Instance.EndDay);
             });
 
-            DayManager.Instance.OnNextDay += () => { daysText.text = "Day " + DayManager.Instance.CurrentDay; };
-            InventoryManager.OnGoldChange += (gold) => { goldText.text = gold + " Gold"; };
+            DayManager.Instance.OnNextDay += () => { daysText.text = "Day <b>" + DayManager.Instance.CurrentDay; };
+            InventoryManager.OnGoldChange += (gold) => { goldText.text = gold + " <b>Gold"; };
+            InventoryManager.OnStarsChange += (stars) => { starsText.text = stars + " <b>Stars"; };
         }
     }
 

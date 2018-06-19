@@ -19,6 +19,7 @@ namespace Rondo.QuestSim.Quests {
         public int DifficultyLevel { get; set; }
         public QuestRewardGold GoldReward { get; set; }
         public List<QuestRewardItem> ItemRewards { get; set; }
+        public List<QuestRewardHero> HeroRewards { get; set; }
         public int DaysLeftOnPost { get; set; }
         public int DaysLeftOnQuest { get; set; }
 
@@ -30,6 +31,7 @@ namespace Rondo.QuestSim.Quests {
             QuestSource = source;
             GoldReward = new QuestRewardGold();
             ItemRewards = new List<QuestRewardItem>();
+            HeroRewards = new List<QuestRewardHero>();
             DaysLeftOnPost = 5;
             DaysLeftOnQuest = 3;
 
@@ -43,8 +45,9 @@ namespace Rondo.QuestSim.Quests {
             preferenceValue += (hero.QuestPrefRewardItem / AverageExpectedItemReward) * (GetTotalItemRewardValue());
 
             //Difficulty scaler, should be replaced by hero.PowerLevel
-            float maxDifficultyDifference = 7;
-            preferenceValue *= Mathf.Pow((maxDifficultyDifference - Mathf.Abs(hero.QuestPrefDifficulty - DifficultyLevel)) / maxDifficultyDifference, 1.5f);
+            float maxDifficultyDifference = 3;
+            float difficultyScaler = (maxDifficultyDifference - Mathf.Abs(hero.QuestPrefDifficulty - DifficultyLevel)) / maxDifficultyDifference;
+            preferenceValue *= difficultyScaler;
 
             return preferenceValue > 0.7f;
         }
@@ -68,6 +71,7 @@ namespace Rondo.QuestSim.Quests {
             ReputationManager.GetReputationTracker(faction).ModifyReputation(ExperiencePoints * 0.1f);
 
             InventoryManager.Gold += Mathf.RoundToInt(AverageExpectedGoldReward * 1.5f * Random.Range(0.8f, 1.2f));
+            InventoryManager.Stars += DifficultyLevel;
         }
 
         public void RefundQuestRewards(bool refundGold, bool refundItems) {

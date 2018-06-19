@@ -17,11 +17,10 @@ namespace Rondo.QuestSim.Heroes {
 
         public int Level { get { return (Experience / 20) + 1; } }
         public float LevelProgress { get { return HeroState != HeroStates.UNDISCOVERED ? m_LevelProgress : 0; } }
-        public string ClassProgress { get { return HeroState != HeroStates.UNDISCOVERED ? ("Lv" + Level + " " + Class.ToString().ToCamelCase()) : "???"; } }
         public int PowerLevel { get { return Mathf.RoundToInt((EquipmentLevel * 0.5f) + (Level + 1)); } }
 
         public Dictionary<QuestTypes, float> QuestTypePreferences { get; set; }
-        public int QuestPrefDifficulty { get { return Level / 10; } }
+        public int QuestPrefDifficulty { get { return Mathf.RoundToInt(Level / 5f); } }
         public float QuestPrefRewardItem { get; set; }
         public float QuestPrefRewardGold { get; set; }
 
@@ -51,21 +50,13 @@ namespace Rondo.QuestSim.Heroes {
             }
         }
 
-        private void CalculateLevels() {
-            int totalExpLeft = m_Experience;
-            int expRequired = 10;
-            int lastExpRequired = 0;
-            int currentLevel = 1;
-            while(totalExpLeft != 0) {
-                if (expRequired > totalExpLeft) break;
-                totalExpLeft -= expRequired;
-                currentLevel++;
-                lastExpRequired = expRequired;
-                expRequired = Mathf.RoundToInt(expRequired * 1.25f);
-            }
+        public string GetClassProgress(int overrideLevel = -1){
+            if (overrideLevel == -1) overrideLevel = Level;
+            return HeroState != HeroStates.UNDISCOVERED ? ("Lv" + overrideLevel + " " + Class.ToString().ToCamelCase()) : "???";
+        }
 
-            m_Level = currentLevel;
-            m_LevelProgress = ((float)expRequired - totalExpLeft) / expRequired;
+        private void CalculateLevels() {
+            HeroUtility.CalculateHeroLevel(m_Experience, out m_Level, out m_LevelProgress);
         }
 
     }

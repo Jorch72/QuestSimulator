@@ -8,12 +8,15 @@ namespace Rondo.QuestSim.Inventory {
     public static class InventoryManager {
 
         public static int Gold { get { return m_Gold; } set { m_Gold = value; OnGoldChange(value); } }
+        public static int Stars { get { return m_Stars; } set { m_Stars = value; OnStarsChange(value); } }
         public static List<GameItem> OwnedItems { get; set; }
         public static List<GameItem> ReservedItems { get; set; }
 
         public static Action<int> OnGoldChange = delegate { };
+        public static Action<int> OnStarsChange = delegate { };
 
         private static int m_Gold = 0;
+        private static int m_Stars = 0;
 
         public static void Initialize() {
             Gold = 0;

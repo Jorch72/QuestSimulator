@@ -7,7 +7,6 @@ namespace Rondo.QuestSim.Quests.Rewards {
 
     public interface IQuestReward {
         float RewardValue { get; }
-        void GiveToHero();
     }
 
 }

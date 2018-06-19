@@ -143,7 +143,7 @@ namespace Rondo.QuestSim.UI.PostedQuests {
         }
 
         private void FindPotentialHeroes() {
-            foreach (HeroInstance hero in HeroManager.GetAllHeroes()) {
+            foreach (HeroInstance hero in HeroManager.GetAvailableHeroes()) {
                 if (m_CurrentQuest.WouldHeroAccept(hero)) m_AvailableHeroes.Add(hero);
             }
 

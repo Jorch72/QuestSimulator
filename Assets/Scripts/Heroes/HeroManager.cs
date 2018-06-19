@@ -1,4 +1,5 @@
 ﻿using Rondo.Generic.Utility;
+using Rondo.QuestSim.Quests;
 using Rondo.QuestSim.Quests.Sources;
 using Rondo.QuestSim.UI.Reputation;
 using System.Collections;
@@ -26,6 +27,14 @@ namespace Rondo.QuestSim.Heroes {
 
         public static List<HeroInstance> GetAllHeroes() {
             return new List<HeroInstance>(m_Heroes.Keys);
+        }
+
+        public static List<HeroInstance> GetAvailableHeroes() {
+            List<HeroInstance> heroes = new List<HeroInstance>(m_Heroes.Keys);
+            foreach(KeyValuePair<QuestInstance, HeroInstance> activeQuests in QuestManager.ActiveQuests) {
+                heroes.Remove(activeQuests.Value);
+            }
+            return heroes;
         }
 
         public static QuestSourceFaction GetHeroFaction(HeroInstance hero) {
