@@ -12,6 +12,7 @@ namespace Rondo.QuestSim.Heroes {
         public string Nickname { get; set; }
         public HeroClasses Class { get; set; }
         public int Experience { get { return HeroState != HeroStates.UNDISCOVERED ? m_Experience : 0; } set { m_Experience = value; OnExperienceChange(); } }
+        public int ExperienceReqForNextLevel { get { return HeroState != HeroStates.UNDISCOVERED ? m_ExperienceForNextLevel : 0; } set { m_ExperienceForNextLevel = value; } }
         public int EquipmentLevel { get; set; }
         public HeroStates HeroState { get; set; }
 
@@ -28,6 +29,7 @@ namespace Rondo.QuestSim.Heroes {
 
         private string m_DisplayName;
         private int m_Experience = 0;
+        private int m_ExperienceForNextLevel = 0;
         private int m_Level = 1;
         private float m_LevelProgress = 0;
 
@@ -56,7 +58,7 @@ namespace Rondo.QuestSim.Heroes {
         }
 
         private void CalculateLevels() {
-            HeroUtility.CalculateHeroLevel(m_Experience, out m_Level, out m_LevelProgress);
+            HeroUtility.CalculateHeroLevel(m_Experience, out m_Level, out m_ExperienceForNextLevel, out m_LevelProgress);
         }
 
     }

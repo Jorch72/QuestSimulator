@@ -6,7 +6,7 @@ namespace Rondo.Generic.Utility {
 
     public static class HeroUtility {
 
-        public static void CalculateHeroLevel(float totalExperience, out int level, out float normalizedProgress) {
+        public static void CalculateHeroLevel(float totalExperience, out int level, out int expForNextLevel, out float normalizedProgress) {
             float totalExpLeft = totalExperience;
             int expRequired = 10;
             int lastExpRequired = 0;
@@ -20,6 +20,7 @@ namespace Rondo.Generic.Utility {
             }
 
             level = currentLevel;
+            expForNextLevel = expRequired;
             normalizedProgress = 1 - (((float)expRequired - totalExpLeft) / expRequired);
         }
 

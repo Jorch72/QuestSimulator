@@ -46,8 +46,9 @@ namespace Rondo.QuestSim.UI.Reputation {
             m_CurrentExperience = experience;
 
             int level;
+            int expForNextLevel;
             float levelProgress;
-            HeroUtility.CalculateHeroLevel(m_CurrentExperience, out level, out levelProgress);
+            HeroUtility.CalculateHeroLevel(m_CurrentExperience, out level, out expForNextLevel, out levelProgress);
 
             classText.text = Hero.GetClassProgress(level);
             levelProgressFill.localScale = new Vector3(levelProgress, levelProgressFill.localScale.y, levelProgressFill.localScale.z);
