@@ -30,8 +30,7 @@ namespace Rondo.QuestSim.Gameplay {
         }
 
         public void EndDay() {
-            PostedQuestWindow questWindow = PostedQuestWindow.Instance;
-            questWindow.OnWindowClose += NextDayStep;
+            PostedQuestWindow.Instance.OnWindowClose += NextDayStep;
 
             m_QuestsToAssign = new List<QuestInstance>(QuestManager.PostedQuests);
             m_ActiveQuestsToUpdate = new List<QuestInstance>(QuestManager.ActiveQuests.Keys);
@@ -50,16 +49,18 @@ namespace Rondo.QuestSim.Gameplay {
             }
 
             Debug.Log("Quests to finish = " + m_ActiveQuestsToUpdate.Count);
-            if (m_ActiveQuestsToUpdate.Count != 0) {
+            while (m_ActiveQuestsToUpdate.Count != 0) {
                 //Show reward thing, for now just give everything
                 QuestInstance activeQuest = m_ActiveQuestsToUpdate[m_ActiveQuestsToUpdate.Count -1];
                 activeQuest.DaysLeftOnQuest--;
 
-                if (activeQuest.DaysLeftOnQuest <= 0) {
-                    activeQuest.CompleteQuest(QuestManager.ActiveQuests[activeQuest]);
-                    QuestManager.ActiveQuests.Remove(activeQuest);
-                }
                 m_ActiveQuestsToUpdate.Remove(activeQuest);
+
+                if (activeQuest.DaysLeftOnQuest <= 0) {
+                    PostedQuestWindow.Instance.OpenWindow(activeQuest, PostedQuestWindow.PostedQuestMode.COMPLETED);
+                    activeQuest.CompleteQuest(QuestManager.ActiveQuests[activeQuest]);
+                    return;
+                }
             }
 
             CurrentDay++;
@@ -70,6 +71,7 @@ namespace Rondo.QuestSim.Gameplay {
             QuestManager.Requests = UpdateQuestTimeLimits(QuestManager.Requests, 1);
 
             NightFadeUI.Instance.Disable(()=> { });
+            PostedQuestWindow.Instance.OnWindowClose -= NextDayStep;
         }
 
         private List<QuestInstance> UpdateQuestTimeLimits(List<QuestInstance> list, int dayLimit) {

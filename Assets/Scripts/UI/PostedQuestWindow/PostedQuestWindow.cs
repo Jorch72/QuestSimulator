@@ -26,6 +26,7 @@ namespace Rondo.QuestSim.UI.PostedQuests {
         public Button skipButton;
         public Button cancelButton;
         public Button acceptButton;
+        public Button completeButton;
 
         [Header("Mode objects")]
         public GameObject heroSelectParent;
@@ -63,6 +64,10 @@ namespace Rondo.QuestSim.UI.PostedQuests {
                 CloseWindow();
             });
 
+            completeButton.onClick.AddListener(() => {
+                QuestManager.ActiveQuests.Remove(m_CurrentQuest);
+                CloseWindow();
+            });
 
             Instance = this;
             gameObject.SetActive(false);
@@ -95,18 +100,28 @@ namespace Rondo.QuestSim.UI.PostedQuests {
                     skipButton.gameObject.SetActive(true);
                     cancelButton.gameObject.SetActive(true);
                     acceptButton.gameObject.SetActive(true);
+                    completeButton.gameObject.SetActive(false);
                     break;
                 case PostedQuestMode.POSTED_REVIEW:
                     closeButton.gameObject.SetActive(true);
                     skipButton.gameObject.SetActive(false);
                     cancelButton.gameObject.SetActive(true);
                     acceptButton.gameObject.SetActive(false);
+                    completeButton.gameObject.SetActive(false);
                     break;
                 case PostedQuestMode.ACTIVE_REVIEW:
                     closeButton.gameObject.SetActive(true);
                     skipButton.gameObject.SetActive(false);
                     cancelButton.gameObject.SetActive(true);
                     acceptButton.gameObject.SetActive(false);
+                    completeButton.gameObject.SetActive(false);
+                    break;
+                case PostedQuestMode.COMPLETED:
+                    closeButton.gameObject.SetActive(false);
+                    skipButton.gameObject.SetActive(false);
+                    cancelButton.gameObject.SetActive(false);
+                    acceptButton.gameObject.SetActive(false);
+                    completeButton.gameObject.SetActive(true);
                     break;
             }
 
@@ -138,6 +153,11 @@ namespace Rondo.QuestSim.UI.PostedQuests {
                 case PostedQuestMode.POSTED_REVIEW:
                     heroSelectParent.SetActive(false);
                     heroSelectedParent.SetActive(false);
+                    break;
+                case PostedQuestMode.COMPLETED:
+                    heroSelectParent.SetActive(false);
+                    heroSelectedParent.SetActive(true);
+                    FindActiveHero();
                     break;
             }
         }
@@ -188,7 +208,8 @@ namespace Rondo.QuestSim.UI.PostedQuests {
         public enum PostedQuestMode {
             HERO_SELECT,
             POSTED_REVIEW,
-            ACTIVE_REVIEW
+            ACTIVE_REVIEW,
+            COMPLETED
         }
 
     }
