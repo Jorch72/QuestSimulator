@@ -34,28 +34,24 @@ namespace Rondo.QuestSim.Reputation {
                     instance.questPreferenceDelivery = 1;
                     instance.questPreferenceMonsterSlaying = 0.1f;
                     instance.questPreferenceWar = 0;
-                    instance.MaxQuestDifficulty = 3;
                     break;
                 case ReputationBiases.GOVERNMENT:
                     instance.questPreferenceChores = 0.1f;
                     instance.questPreferenceDelivery = 1f;
                     instance.questPreferenceMonsterSlaying = 0.5f;
                     instance.questPreferenceWar = 0.1f;
-                    instance.MaxQuestDifficulty = 5;
                     break;
                 case ReputationBiases.MONSTER_SLAYING:
                     instance.questPreferenceChores = 0;
                     instance.questPreferenceDelivery = 0.25f;
                     instance.questPreferenceMonsterSlaying = 1f;
                     instance.questPreferenceWar = 0.1f;
-                    instance.MaxQuestDifficulty = 7;
                     break;
                 case ReputationBiases.WAR_EFFORT:
                     instance.questPreferenceChores = 0;
                     instance.questPreferenceDelivery = 0.2f;
                     instance.questPreferenceMonsterSlaying = 0f;
                     instance.questPreferenceWar = 1;
-                    instance.MaxQuestDifficulty = 10;
                     break;
             }
         }

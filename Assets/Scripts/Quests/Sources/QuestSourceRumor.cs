@@ -16,7 +16,7 @@ namespace Rondo.QuestSim.Quests.Sources {
         public string DisplayName { get; set; }
         public string RequestTitle { get { return "A rumor surrounding " + DisplayName; } }
 
-        public int MaxQuestDifficulty { get; set; }
+        public int QuestDifficulty { get { return Random.Range(2, 8); } }
 
         public void GenerateSettings() {
             ReputationGenerator.GenerateName(this, ReputationNameConventions.POINT_OF_INTEREST, ReputationNameConventions.TERRITORY);

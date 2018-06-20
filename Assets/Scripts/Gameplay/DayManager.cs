@@ -1,5 +1,6 @@
 ﻿using Rondo.Generic.Utility;
 using Rondo.QuestSim.Heroes;
+using Rondo.QuestSim.Inventory;
 using Rondo.QuestSim.Quests;
 using Rondo.QuestSim.UI.General;
 using Rondo.QuestSim.UI.PostedQuests;
@@ -69,6 +70,7 @@ namespace Rondo.QuestSim.Gameplay {
 
             QuestManager.PostedQuests = UpdateQuestTimeLimits(QuestManager.PostedQuests, 0);
             QuestManager.Requests = UpdateQuestTimeLimits(QuestManager.Requests, 1);
+            InventoryManager.Gold -= 10;
 
             NightFadeUI.Instance.Disable(()=> { });
             PostedQuestWindow.Instance.OnWindowClose -= NextDayStep;

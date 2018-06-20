@@ -9,7 +9,7 @@ namespace Rondo.QuestSim.Quests {
         string DisplayName { get; set; }
         string RequestTitle { get; }
 
-        int MaxQuestDifficulty { get; set; }
+        int QuestDifficulty { get; }
 
         void GenerateSettings();
     }

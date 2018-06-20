@@ -12,7 +12,7 @@ namespace Rondo.QuestSim.Reputation {
         private static Dictionary<QuestSourceFaction, ReputationTracker> m_ReputationDictionary = new Dictionary<QuestSourceFaction, ReputationTracker>();
 
         public static void Initialize() {
-            for(int i = 0; i < 5; i++) {
+            for(int i = 0; i < 1; i++) {
                 AddRandomFaction();
             }
         }

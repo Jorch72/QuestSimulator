@@ -29,7 +29,7 @@ namespace Rondo.QuestSim.Quests.Sources {
         public float questPreferenceWar = 0.5f;
         public float questPreferenceChores = 0.5f;
 
-        public int MaxQuestDifficulty { get; set; }
+        public int QuestDifficulty { get { return GetQuestDifficulty(); } }
 
         public ReputationBiases personalityType = ReputationBiases.VILLAGERS;
         private ReputationNameConventions m_NamingConvention;
@@ -44,6 +44,18 @@ namespace Rondo.QuestSim.Quests.Sources {
             for(int i = 0; i < Random.Range(MIN_HEROES_PER_FACTION, MAX_HEROES_PER_FACTION + 1); i++) {
                 Heroes.Add(HeroGenerator.GenerateHero(this));
             }
+        }
+
+        private int GetQuestDifficulty() {
+            int totalHeroDifficulty = 0;
+
+            foreach(HeroInstance hero in Heroes) {
+                totalHeroDifficulty += hero.QuestPrefDifficulty;
+            }
+
+            totalHeroDifficulty /= Heroes.Count;
+            totalHeroDifficulty = Mathf.Clamp(totalHeroDifficulty + Random.Range(-2, 2), 0, 10);
+            return totalHeroDifficulty;
         }
     }
 }
