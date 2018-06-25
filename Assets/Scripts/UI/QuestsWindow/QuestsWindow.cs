@@ -20,6 +20,8 @@ namespace Rondo.QuestSim.UI.ActiveQuests {
         private RectTransform m_RectTransform;
 
         private void Awake() {
+            Instance = this;
+
             m_RectTransform = GetComponent<RectTransform>();
 
             openCloseToggle.onClick.AddListener(ToggleOpenCloseState);

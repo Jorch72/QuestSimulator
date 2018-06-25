@@ -12,11 +12,14 @@ namespace Rondo.QuestSim.Gameplay {
 
     public class DayManager : MonoBehaviourSingleton<DayManager> {
 
+        public GameObject nothingToReportUI;
+
         public int CurrentDay { get; set; }
         public Action OnNextDay = delegate { };
 
         private List<QuestInstance> m_ActiveQuestsToUpdate = new List<QuestInstance>();
         private List<QuestInstance> m_QuestsToAssign = new List<QuestInstance>();
+        private int m_CurrentDayStep = 0;
 
         private void Awake() {
             CurrentDay = 1;
@@ -39,6 +42,7 @@ namespace Rondo.QuestSim.Gameplay {
                 m_QuestsToAssign.Remove(nextQuest);
 
                 QuestDetailsWindow.Instance.OpenWindow(nextQuest, QuestDetailsWindow.QuestMode.HERO_SELECT);
+                m_CurrentDayStep++;
                 return;
             }
 
@@ -52,8 +56,19 @@ namespace Rondo.QuestSim.Gameplay {
                 if (activeQuest.DaysLeftOnQuest <= 0) {
                     QuestDetailsWindow.Instance.OpenWindow(activeQuest, QuestDetailsWindow.QuestMode.COMPLETED);
                     activeQuest.CompleteQuest(QuestManager.ActiveQuests[activeQuest]);
+                    m_CurrentDayStep++;
                     return;
                 }
+            }
+
+            if(m_CurrentDayStep == 0) {
+                nothingToReportUI.SetActive(true);
+                TimeUtilities.ExecuteAfterDelay(() => {
+                    nothingToReportUI.SetActive(false);
+                    NextDayStep();
+                }, 2.5f, this);
+                m_CurrentDayStep++;
+                return;
             }
 
             CurrentDay++;

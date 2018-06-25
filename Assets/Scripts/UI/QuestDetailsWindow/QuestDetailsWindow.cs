@@ -54,6 +54,10 @@ namespace Rondo.QuestSim.UI.PostedQuests {
         private HeroInstance m_SelectedHero = null;
         private int m_SelectedItemReward = 0;
 
+        void Awake() {
+            Instance = this;
+        }
+
         void Start() {
             closeButton.onClick.AddListener(() => {
                 CloseWindow();
@@ -295,6 +299,8 @@ namespace Rondo.QuestSim.UI.PostedQuests {
 
             m_SelectedHero = null;
             m_SelectedItemReward = 0;
+
+            heroSelectionInstance.GetComponentInChildren<ReputationHeroInstanceUI>(true).ApplyHero(null);
         }
 
         public enum QuestMode {
