@@ -21,7 +21,7 @@ namespace Rondo.QuestSim.UI.Main {
         [Header("Stars")]
         public TextMeshProUGUI starsText;
 
-        private void Start() {
+        private void Awake() {
             endDayButton.onClick.AddListener(()=> {
                 NightFadeUI.Instance.Enable(DayManager.Instance.EndDay);
             });

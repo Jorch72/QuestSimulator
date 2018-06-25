@@ -22,13 +22,6 @@ namespace Rondo.QuestSim.General {
             InventoryManager.Stars = 0;
         }
 
-        private void Update() {
-            if (Input.GetKeyDown(KeyCode.A)) {
-                HeroManager.GetRandomHero().Experience += Random.Range(5, 25);
-            }
-
-        }
-
     }
 
 }
