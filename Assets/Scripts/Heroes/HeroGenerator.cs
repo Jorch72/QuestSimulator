@@ -12,7 +12,7 @@ namespace Rondo.QuestSim.Heroes {
 
     public static class HeroGenerator {
 
-        public static HeroInstance GenerateHero(QuestSourceFaction faction = null) {
+        public static HeroInstance GenerateHero(QuestSourceFaction faction, bool addToRoster) {
             HeroInstance newHero = new HeroInstance();
 
             newHero.DisplayName = NameDatabase.GetHeroName();
@@ -35,7 +35,7 @@ namespace Rondo.QuestSim.Heroes {
             newHero.QuestPrefRewardGold = UnityEngine.Random.Range(0f, 1f);
             newHero.QuestPrefRewardItem = 1 - newHero.QuestPrefRewardGold;
 
-            if (faction != null) {
+            if (addToRoster) {
                 HeroManager.AddHero(newHero, faction);
             }
 

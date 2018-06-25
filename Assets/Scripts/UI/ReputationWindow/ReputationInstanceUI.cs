@@ -42,11 +42,12 @@ namespace Rondo.QuestSim.UI.Reputation {
             reputationProgressFill.localScale = new Vector3(levelProgress, reputationProgressFill.localScale.y, reputationProgressFill.localScale.z);
         }
 
-        public void AddHero(ReputationHeroInstanceUI uiPrefab, HeroInstance hero) {
+        public ReputationHeroInstanceUI AddHero(ReputationHeroInstanceUI uiPrefab, HeroInstance hero) {
             ReputationHeroInstanceUI heroUI = Instantiate(uiPrefab);
             heroUI.GetComponent<RectTransform>().SetParent(heroContentParent);
 
             heroUI.ApplyHero(hero);
+            return heroUI;
         }
     }
 

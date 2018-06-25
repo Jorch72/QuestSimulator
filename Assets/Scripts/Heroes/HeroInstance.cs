@@ -1,5 +1,6 @@
 ﻿using Rondo.Generic.Utility;
 using Rondo.QuestSim.Quests;
+using Rondo.QuestSim.Quests.Sources;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,6 +15,7 @@ namespace Rondo.QuestSim.Heroes {
         public int Experience { get { return HeroState != HeroStates.UNDISCOVERED ? m_Experience : 0; } set { m_Experience = value; OnExperienceChange(); } }
         public int ExperienceReqForNextLevel { get { return HeroState != HeroStates.UNDISCOVERED ? m_ExperienceForNextLevel : 0; } set { m_ExperienceForNextLevel = value; } }
         public int EquipmentLevel { get; set; }
+        public QuestSourceFaction Faction { get { return HeroManager.GetHeroFaction(this); } }
         public HeroStates HeroState { get; set; }
 
         public int Level { get { return (Experience / 20) + 1; } }

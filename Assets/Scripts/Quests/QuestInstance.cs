@@ -12,25 +12,30 @@ namespace Rondo.QuestSim.Quests {
 
     public class QuestInstance {
 
+        private static float HANDLER_GOLD_VARIANCE_MIN = 0.8f;
+        private static float HANDLER_GOLD_VARIANCE_MAX = 1.2f;
+
         public string DisplayName { get; set; }
         public int ObjectiveCount { get; set; }
         public IQuestSource QuestSource { get; private set; }
         public QuestTypes QuestType { get; set; }
         public int DifficultyLevel { get; set; }
         public QuestRewardGold GoldReward { get; set; }
-        public List<QuestRewardItem> ItemRewards { get; set; }
+        public QuestRewardItem ItemReward { get; set; }
+        public IQuestReward AdditionalReward { get; set; }
         public List<QuestRewardHero> HeroRewards { get; set; }
         public int DaysLeftOnPost { get; set; }
         public int DaysLeftOnQuest { get; set; }
+        public string HandlerGoldRewardEstimate { get { return Mathf.RoundToInt(HandlerAverageExpectedGoldReward * HANDLER_GOLD_VARIANCE_MIN) + " - " + Mathf.RoundToInt(HandlerAverageExpectedGoldReward * HANDLER_GOLD_VARIANCE_MAX); } }
 
         private int AverageExpectedGoldReward { get { return Mathf.RoundToInt((DifficultyLevel + 1) * 10 * (ObjectiveCount * 0.75f)); } }
         private float AverageExpectedItemReward { get { return (DifficultyLevel + 1) * 20 * (ObjectiveCount * 0.5f); } }
         private int ExperiencePoints { get { return (DifficultyLevel + 1) * 5 * ObjectiveCount; } }
+        private int HandlerAverageExpectedGoldReward { get { return Mathf.RoundToInt(AverageExpectedGoldReward * 1.5f); } }
 
         public QuestInstance(IQuestSource source) {
             QuestSource = source;
             GoldReward = new QuestRewardGold();
-            ItemRewards = new List<QuestRewardItem>();
             HeroRewards = new List<QuestRewardHero>();
             DaysLeftOnPost = 5;
             DaysLeftOnQuest = 3;
@@ -53,36 +58,30 @@ namespace Rondo.QuestSim.Quests {
         }
 
         private float GetTotalItemRewardValue() {
-            float value = 0;
-            foreach(QuestRewardItem itemReward in ItemRewards) {
-                value += itemReward.RewardValue;
-            }
-            return value;
+            return ItemReward != null ? ItemReward.RewardValue : 0;
         }
 
         public void CompleteQuest(HeroInstance hero) {
-            foreach (QuestRewardItem itemReward in ItemRewards) {
-                hero.EquipmentLevel += itemReward.Item.OverallPower;
-            }
+            if(ItemReward != null) ItemReward.ApplyReward(hero);
+            if (AdditionalReward != null) AdditionalReward.ApplyReward(hero);
+
             hero.Experience += ExperiencePoints;
             hero.HeroState = HeroStates.IDLE;
 
             QuestSourceFaction faction = HeroManager.GetHeroFaction(hero);
             ReputationManager.GetReputationTracker(faction).ModifyReputation(ExperiencePoints * 0.1f);
 
-            InventoryManager.Gold += Mathf.RoundToInt(AverageExpectedGoldReward * 1.5f * Random.Range(0.8f, 1.2f));
+            InventoryManager.Gold += Mathf.RoundToInt(HandlerAverageExpectedGoldReward * Random.Range(HANDLER_GOLD_VARIANCE_MIN, HANDLER_GOLD_VARIANCE_MAX));
             InventoryManager.Stars += DifficultyLevel;
         }
 
-        public void RefundQuestRewards(bool refundGold, bool refundItems) {
+        public void RefundQuestRewards(bool refundGold, bool refundItem) {
             if (refundGold) {
                 InventoryManager.Gold += GoldReward.GoldCount;
             }
 
-            if (refundItems) {
-                foreach (QuestRewardItem itemReward in ItemRewards) {
-                    InventoryManager.MoveItemToOwned(itemReward.Item);
-                }
+            if (refundItem && ItemReward != null) {
+                InventoryManager.MoveItemToOwned(ItemReward.Item);
             }
         }
     }

@@ -1,4 +1,5 @@
 ﻿using Rondo.QuestSim.Inventory;
+using Rondo.QuestSim.Quests.Rewards;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -13,9 +14,23 @@ namespace Rondo.QuestSim.UI.General {
 
         private GameItemPopupCaller m_ItemPopupCaller;
 
+        public void SetItem(QuestRewardItem reward) {
+            if(reward == null) {
+                SetItem((GameItem)null);
+            } else {
+                SetItem(reward.Item);
+            }
+        }
+
         public void SetItem(GameItem item) {
             if(m_ItemPopupCaller == null) m_ItemPopupCaller = GetComponent<GameItemPopupCaller>();
-            titleText.text = item.DisplayName;
+
+            if(item == null) {
+                titleText.text = "-";
+            } else {
+                titleText.text = item.DisplayName;
+            }
+
             m_ItemPopupCaller.associatedItem = item;
         }
 

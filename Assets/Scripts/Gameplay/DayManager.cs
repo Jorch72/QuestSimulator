@@ -31,7 +31,7 @@ namespace Rondo.QuestSim.Gameplay {
         }
 
         public void EndDay() {
-            PostedQuestWindow.Instance.OnWindowClose += NextDayStep;
+            QuestDetailsWindow.Instance.OnWindowClose += NextDayStep;
 
             m_QuestsToAssign = new List<QuestInstance>(QuestManager.PostedQuests);
             m_ActiveQuestsToUpdate = new List<QuestInstance>(QuestManager.ActiveQuests.Keys);
@@ -40,16 +40,14 @@ namespace Rondo.QuestSim.Gameplay {
         }
 
         private void NextDayStep() {
-            Debug.Log("Quests left to assign = " + m_QuestsToAssign.Count);
             if(m_QuestsToAssign.Count != 0) {
                 QuestInstance nextQuest = m_QuestsToAssign[m_QuestsToAssign.Count - 1];
                 m_QuestsToAssign.Remove(nextQuest);
 
-                PostedQuestWindow.Instance.OpenWindow(nextQuest, PostedQuestWindow.PostedQuestMode.HERO_SELECT);
+                QuestDetailsWindow.Instance.OpenWindow(nextQuest, QuestDetailsWindow.QuestMode.HERO_SELECT);
                 return;
             }
 
-            Debug.Log("Quests to finish = " + m_ActiveQuestsToUpdate.Count);
             while (m_ActiveQuestsToUpdate.Count != 0) {
                 //Show reward thing, for now just give everything
                 QuestInstance activeQuest = m_ActiveQuestsToUpdate[m_ActiveQuestsToUpdate.Count -1];
@@ -58,7 +56,7 @@ namespace Rondo.QuestSim.Gameplay {
                 m_ActiveQuestsToUpdate.Remove(activeQuest);
 
                 if (activeQuest.DaysLeftOnQuest <= 0) {
-                    PostedQuestWindow.Instance.OpenWindow(activeQuest, PostedQuestWindow.PostedQuestMode.COMPLETED);
+                    QuestDetailsWindow.Instance.OpenWindow(activeQuest, QuestDetailsWindow.QuestMode.COMPLETED);
                     activeQuest.CompleteQuest(QuestManager.ActiveQuests[activeQuest]);
                     return;
                 }
@@ -73,7 +71,7 @@ namespace Rondo.QuestSim.Gameplay {
             InventoryManager.Gold -= 10;
 
             NightFadeUI.Instance.Disable(()=> { });
-            PostedQuestWindow.Instance.OnWindowClose -= NextDayStep;
+            QuestDetailsWindow.Instance.OnWindowClose -= NextDayStep;
         }
 
         private List<QuestInstance> UpdateQuestTimeLimits(List<QuestInstance> list, int dayLimit) {

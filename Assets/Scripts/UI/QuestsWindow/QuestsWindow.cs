@@ -9,11 +9,12 @@ using UnityEngine.UI;
 
 namespace Rondo.QuestSim.UI.ActiveQuests {
 
-    public class ActiveQuestsWindow : MonoBehaviourSingleton<ActiveQuestsWindow> {
+    public class QuestsWindow : MonoBehaviourSingleton<QuestsWindow> {
 
-        public ActiveQuestInstance instancePrefab;
+        public QuestInstanceUI instancePrefab;
         public RectTransform postedQuestsParent;
         public RectTransform activeQuestsParent;
+        public RectTransform requestQuestsParent;
         public Button openCloseToggle;
 
         private RectTransform m_RectTransform;
@@ -37,16 +38,23 @@ namespace Rondo.QuestSim.UI.ActiveQuests {
         public void Reload() {
             DeleteInstancesFromParent(postedQuestsParent);
             DeleteInstancesFromParent(activeQuestsParent);
+            DeleteInstancesFromParent(requestQuestsParent);
 
             foreach(QuestInstance quest in QuestManager.PostedQuests) {
-                ActiveQuestInstance newInstance = Instantiate(instancePrefab);
-                newInstance.GetComponent<RectTransform>().SetParent(postedQuestsParent);
+                QuestInstanceUI newInstance = Instantiate(instancePrefab);
+                newInstance.GetComponent<RectTransform>().SetParent(postedQuestsParent, false);
                 newInstance.ApplyQuestChain(quest);
             }
 
             foreach (QuestInstance quest in QuestManager.ActiveQuests.Keys) {
-                ActiveQuestInstance newInstance = Instantiate(instancePrefab);
-                newInstance.GetComponent<RectTransform>().SetParent(activeQuestsParent);
+                QuestInstanceUI newInstance = Instantiate(instancePrefab);
+                newInstance.GetComponent<RectTransform>().SetParent(activeQuestsParent, false);
+                newInstance.ApplyQuestChain(quest);
+            }
+
+            foreach (QuestInstance quest in QuestManager.Requests) {
+                QuestInstanceUI newInstance = Instantiate(instancePrefab);
+                newInstance.GetComponent<RectTransform>().SetParent(requestQuestsParent, false);
                 newInstance.ApplyQuestChain(quest);
             }
         }

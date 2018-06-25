@@ -1,4 +1,5 @@
 ﻿using Rondo.Generic.Utility;
+using Rondo.QuestSim.Quests.Rewards;
 using Rondo.QuestSim.Quests.Sources;
 using Rondo.QuestSim.Reputation;
 using System.Collections;
@@ -17,19 +18,29 @@ namespace Rondo.QuestSim.Quests {
             new int[5] { 1, 2, 3, 4, 5 },
             new int[5] { 5, 3, 3, 2, 1 });
 
+        public static int daysSinceHeroRecruit = Random.Range(10, 20);
+
         public static QuestInstance GenerateQuestInstance() {
             int questObjectiveSize = m_QuestSizeChoser.GetRandomValue();
             int sourceChoice = m_QuestSourceChoser.GetRandomValue();
+
+            IQuestReward additionalReward = null;
             IQuestSource qSource;
             if (sourceChoice == 0) {
                 qSource = ReputationGenerator.GenerateReputationInstance(new QuestSourceRumor());
             } else if (sourceChoice == 1) {
                 qSource = ReputationManager.GetRandomFaction();
+                if (Random.Range(0, daysSinceHeroRecruit) == 0) {
+                    additionalReward = new QuestRewardHero(qSource as QuestSourceFaction);
+                    daysSinceHeroRecruit = Random.Range(10, 20);
+                }
             } else {
                 qSource = ReputationGenerator.GenerateReputationInstance(new QuestSourcePerson(EnumUtility.GetRandomEnumValue<ReputationBiases>()));
             }
-            
-            return QuestGenerator.GenerateQuestInstance(qSource, questObjectiveSize);
+
+            QuestInstance quest = GenerateQuestInstance(qSource, questObjectiveSize);
+            quest.AdditionalReward = additionalReward;
+            return quest;
         }
 
         public static QuestInstance GenerateQuestInstance(IQuestSource questSource, int objectiveCount = 1) {

@@ -16,30 +16,50 @@ namespace Rondo.QuestSim.UI.Reputation {
 
         public HeroInstance Hero { get; private set; }
 
-        private Coroutine m_UpdateRoutine = null;
+        private Coroutine m_UpdateExperienceRoutine = null;
         private float m_CurrentExperience = 0;
+        private CanvasGroup m_CanvasGroup;
+        private Coroutine m_UpdateAlphaRoutine = null;
+
+        void Awake() {
+            m_CanvasGroup = GetComponent<CanvasGroup>();
+            ApplyHero(null);
+        }
 
         void OnDestroy() {
+            if (Hero == null) return;
             Hero.OnExperienceChange -= UpdateProgressSmooth;
         }
 
         public void ApplyHero(HeroInstance hero) {
+            if(Hero != null) {
+                Hero.OnExperienceChange -= UpdateProgressSmooth;
+            }
+
             Hero = hero;
-            nameText.text = Hero.DisplayName;
-            Hero.OnExperienceChange += UpdateProgressSmooth;
+
+            if(Hero != null) {
+                Hero.OnExperienceChange += UpdateProgressSmooth;
+            }
 
             UpdateProgressInstant();
         }
 
         private void UpdateProgressInstant() {
-            nameText.text = Hero.DisplayName;
-            SetExperience(Hero.Experience);
+            if(Hero != null) {
+                nameText.text = Hero.DisplayName;
+                SetExperience(Hero.Experience);
+            } else {
+                nameText.text = "-";
+                classText.text = "-";
+                levelProgressFill.localScale = new Vector3(0, levelProgressFill.localScale.y, levelProgressFill.localScale.z);
+            }
         }
 
         private void UpdateProgressSmooth() {
             if (!gameObject.activeInHierarchy) return;
-            if (m_UpdateRoutine != null) StopCoroutine(m_UpdateRoutine);
-            m_UpdateRoutine = StartCoroutine(SmoothUpdate(Hero.Experience));
+            if (m_UpdateExperienceRoutine != null) StopCoroutine(m_UpdateExperienceRoutine);
+            m_UpdateExperienceRoutine = StartCoroutine(SmoothExperienceUpdate(Hero.Experience));
         }
 
         private void SetExperience(float experience) {
@@ -54,7 +74,7 @@ namespace Rondo.QuestSim.UI.Reputation {
             levelProgressFill.localScale = new Vector3(levelProgress, levelProgressFill.localScale.y, levelProgressFill.localScale.z);
         }
 
-        private IEnumerator SmoothUpdate(float targetExp) {
+        private IEnumerator SmoothExperienceUpdate(float targetExp) {
             while(Mathf.Abs(targetExp - m_CurrentExperience) >= 0.01f) {
                 m_CurrentExperience = Mathf.Lerp(m_CurrentExperience, targetExp, 0.1f);
                 SetExperience(m_CurrentExperience);
@@ -62,9 +82,13 @@ namespace Rondo.QuestSim.UI.Reputation {
             }
             m_CurrentExperience = targetExp;
             SetExperience(Mathf.RoundToInt(m_CurrentExperience));
-            StopCoroutine(m_UpdateRoutine);
-            m_UpdateRoutine = null;
+            StopCoroutine(m_UpdateExperienceRoutine);
+            m_UpdateExperienceRoutine = null;
             yield return null;
+        }
+
+        public void SetAlpha(float alpha) {
+            m_CanvasGroup.alpha = alpha;
         }
     }
 

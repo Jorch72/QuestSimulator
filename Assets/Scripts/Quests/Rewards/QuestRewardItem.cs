@@ -1,8 +1,5 @@
 ﻿using Rondo.QuestSim.Inventory;
-using Rondo.QuestSim.Reputation;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+using Rondo.QuestSim.Heroes;
 
 namespace Rondo.QuestSim.Quests.Rewards {
 
@@ -10,9 +7,14 @@ namespace Rondo.QuestSim.Quests.Rewards {
 
         public GameItem Item { get; private set; }
         public float RewardValue { get { return Item.OverallPower * ((int)Item.Rarity * 0.5f) + ((int)Item.Rarity * 10); } }
+        public string DisplayValue { get { return Item.DisplayName; } }
 
         public QuestRewardItem(GameItem item) {
             Item = item;
+        }
+
+        public void ApplyReward(HeroInstance hero) {
+            hero.EquipmentLevel += Item.OverallPower;
         }
     }
 

@@ -26,17 +26,19 @@ namespace Rondo.QuestSim.Quests {
                 new int[3] { 0, 1, 2 },
                 new int[3] { 1, 3, 1 });
 
-            DayManager.Instance.OnNextDay += AddDailyRequest;
+            DayManager.Instance.OnNextDay += NextDay;
 
             GenerateStartingQuests();
         }
 
-        private static void AddDailyRequest() {
+        private static void NextDay() {
             int questCount = m_QuestAmountChoser.GetRandomValue();
             for (int i = 0; i < questCount; i++) {
                 QuestInstance newQuest = QuestGenerator.GenerateQuestInstance();
                 Requests.Add(newQuest);
             }
+
+            QuestGenerator.daysSinceHeroRecruit = Mathf.Clamp(QuestGenerator.daysSinceHeroRecruit - 1, 0, int.MaxValue);
         }
 
         public static void GenerateStartingQuests() {
