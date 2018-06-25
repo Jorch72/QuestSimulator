@@ -24,12 +24,6 @@ namespace Rondo.QuestSim.Gameplay {
             Instance = this;
         }
 
-        private void Update() {
-            if (Input.GetKeyDown(KeyCode.Q)) {
-                EndDay();
-            }
-        }
-
         public void EndDay() {
             QuestDetailsWindow.Instance.OnWindowClose += NextDayStep;
 

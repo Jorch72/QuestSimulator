@@ -1,10 +1,12 @@
 ﻿using Rondo.Generic.Utility;
+using Rondo.QuestSim.General;
 using Rondo.QuestSim.Heroes;
 using Rondo.QuestSim.Reputation;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Rondo.QuestSim.UI.Reputation {
 
@@ -12,6 +14,7 @@ namespace Rondo.QuestSim.UI.Reputation {
 
         public TextMeshProUGUI nameText;
         public TextMeshProUGUI classText;
+        public Image statusIcon;
         public RectTransform levelProgressFill;
 
         public HeroInstance Hero { get; private set; }
@@ -29,20 +32,28 @@ namespace Rondo.QuestSim.UI.Reputation {
         void OnDestroy() {
             if (Hero == null) return;
             Hero.OnExperienceChange -= UpdateProgressSmooth;
+            Hero.OnStateChange -= UpdateHeroStatus;
         }
 
         public void ApplyHero(HeroInstance hero) {
             if(Hero != null) {
                 Hero.OnExperienceChange -= UpdateProgressSmooth;
+                Hero.OnStateChange -= UpdateHeroStatus;
             }
 
             Hero = hero;
 
             if(Hero != null) {
                 Hero.OnExperienceChange += UpdateProgressSmooth;
+                Hero.OnStateChange += UpdateHeroStatus;
             }
 
             UpdateProgressInstant();
+            UpdateHeroStatus();
+        }
+
+        public void UpdateHeroStatus() {
+            statusIcon.sprite = SpriteFetcher.Icons.GetSpriteForStatus(Hero != null ? Hero.HeroState : HeroStates.UNDISCOVERED);
         }
 
         private void UpdateProgressInstant() {

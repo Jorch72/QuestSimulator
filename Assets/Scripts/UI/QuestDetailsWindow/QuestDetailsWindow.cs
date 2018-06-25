@@ -4,6 +4,7 @@ using Rondo.QuestSim.Inventory;
 using Rondo.QuestSim.Quests;
 using Rondo.QuestSim.Quests.Rewards;
 using Rondo.QuestSim.Reputation;
+using Rondo.QuestSim.UI.ActiveQuests;
 using Rondo.QuestSim.UI.General;
 using Rondo.QuestSim.UI.Reputation;
 using System;
@@ -66,23 +67,31 @@ namespace Rondo.QuestSim.UI.PostedQuests {
                 m_CurrentQuest.RefundQuestRewards(true, true);
                 QuestManager.PostedQuests.Remove(m_CurrentQuest);
                 QuestManager.Requests.Add(m_CurrentQuest);
+                QuestsWindow.Instance.Reload();
                 CloseWindow();
             });
 
             acceptButton.onClick.AddListener(() => {
+                m_SelectedHero.HeroState = HeroStates.ON_QUEST;
+
                 QuestManager.PostedQuests.Remove(m_CurrentQuest);
                 QuestManager.ActiveQuests.Add(m_CurrentQuest, m_SelectedHero);
+                QuestsWindow.Instance.Reload();
                 CloseWindow();
             });
 
             completeButton.onClick.AddListener(() => {
+                QuestManager.ActiveQuests[m_CurrentQuest].HeroState = HeroStates.IDLE;
+
                 QuestManager.ActiveQuests.Remove(m_CurrentQuest);
+                QuestsWindow.Instance.Reload();
                 CloseWindow();
             });
 
             postButton.onClick.AddListener(() => {
                 QuestManager.Requests.Remove(m_CurrentQuest);
                 QuestManager.PostedQuests.Add(m_CurrentQuest);
+                QuestsWindow.Instance.Reload();
 
                 InventoryManager.Gold -= m_CurrentQuest.GoldReward.GoldCount;
                 if (m_SelectedItemReward != 0) {

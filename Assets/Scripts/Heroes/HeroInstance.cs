@@ -16,7 +16,7 @@ namespace Rondo.QuestSim.Heroes {
         public int ExperienceReqForNextLevel { get { return HeroState != HeroStates.UNDISCOVERED ? m_ExperienceForNextLevel : 0; } set { m_ExperienceForNextLevel = value; } }
         public int EquipmentLevel { get; set; }
         public QuestSourceFaction Faction { get { return HeroManager.GetHeroFaction(this); } }
-        public HeroStates HeroState { get; set; }
+        public HeroStates HeroState { get { return m_HeroState; } set { m_HeroState = value; OnStateChange(); } }
 
         public int Level { get { return (Experience / 20) + 1; } }
         public float LevelProgress { get { return HeroState != HeroStates.UNDISCOVERED ? m_LevelProgress : 0; } }
@@ -28,12 +28,14 @@ namespace Rondo.QuestSim.Heroes {
         public float QuestPrefRewardGold { get; set; }
 
         public Action OnExperienceChange = delegate { };
+        public Action OnStateChange = delegate { };
 
         private string m_DisplayName;
         private int m_Experience = 0;
         private int m_ExperienceForNextLevel = 0;
         private int m_Level = 1;
         private float m_LevelProgress = 0;
+        private HeroStates m_HeroState = HeroStates.IDLE;
 
         public HeroInstance() {
             QuestTypePreferences = new Dictionary<QuestTypes, float>();
