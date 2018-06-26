@@ -5,7 +5,8 @@ namespace Rondo.QuestSim.Heroes {
         UNDISCOVERED,
         IDLE,
         ON_QUEST,
-        DEAD
+        DEAD,
+        WOUNDED
     }
 
 }

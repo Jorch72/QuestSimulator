@@ -11,6 +11,7 @@ namespace Rondo.QuestSim.ScriptableObjects {
         public Sprite questingIcon;
         public Sprite idleIcon;
         public Sprite unknownIcon;
+        public Sprite woundedIcon;
 
         public Sprite GetSpriteForStatus(HeroStates state) {
             switch (state) {
@@ -22,6 +23,8 @@ namespace Rondo.QuestSim.ScriptableObjects {
                     return questingIcon;
                 case HeroStates.DEAD:
                     return deathIcon;
+                case HeroStates.WOUNDED:
+                    return woundedIcon;
                 default:
                     return unknownIcon;
             }
