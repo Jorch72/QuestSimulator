@@ -10,7 +10,7 @@ namespace Rondo.QuestSim.Inventory {
         UNCOMMON = 2,
         RARE = 3,
         EPIC = 4,
-        LEGENDARY = 6
+        LEGENDARY = 5
     }
 
 }

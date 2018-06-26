@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Rondo.Generic.Utility;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,12 +14,12 @@ namespace Rondo.QuestSim.Inventory {
         public int DefencePower { get { return Mathf.RoundToInt(BaseDefencePower * (BaseQuality + 1)) * (int)Rarity; } }
 
         public float BaseQuality { get; set; }
-        public int BaseAttackPower { get; set; }
-        public int BaseDefencePower { get; set; }
+        public float BaseAttackPower { get; set; }
+        public float BaseDefencePower { get; set; }
 
         public GameItem(GameItemRarity rarity, float quality) {
             Rarity = rarity;
-            BaseQuality = quality;
+            BaseQuality = quality.Map(0, 1, 0.3f, 0.7f);
         }
     }
 

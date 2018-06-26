@@ -16,7 +16,7 @@ namespace Rondo.QuestSim.Quests.Sources {
         public string DisplayName { get; set; }
         public string RequestTitle { get { return "A personal request from " + DisplayName; } }
 
-        public int QuestDifficulty { get { return Random.Range(0, 10); } }
+        public int QuestDifficulty { get { return Random.Range(0, 11); } }
 
         public ReputationBiases personalityType = ReputationBiases.VILLAGERS;
 

@@ -229,7 +229,7 @@ namespace Rondo.QuestSim.UI.PostedQuests {
             if(heroGoldRewardInput.gameObject.activeSelf) heroGoldRewardInput.text = "0";
 
             handlerGoldReward.text = m_CurrentQuest.HandlerGoldRewardEstimate;
-            handlerRewardItemInstance.SetItem((GameItem)null);
+            handlerRewardItemInstance.SetItem(m_CurrentQuest.HandlerItemReward != null ? m_CurrentQuest.HandlerItemReward.Item : (GameItem)null);
             handlerAdditionalReward.text = m_CurrentQuest.AdditionalReward != null ? m_CurrentQuest.AdditionalReward.DisplayValue : "-";
 
         }

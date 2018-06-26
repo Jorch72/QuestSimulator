@@ -1,4 +1,5 @@
 ﻿using Rondo.Generic.Utility;
+using Rondo.QuestSim.Inventory;
 using Rondo.QuestSim.Quests.Rewards;
 using Rondo.QuestSim.Quests.Sources;
 using Rondo.QuestSim.Reputation;
@@ -24,14 +25,18 @@ namespace Rondo.QuestSim.Quests {
         public static QuestInstance GenerateQuestInstance() {
             int questObjectiveSize = m_QuestSizeChoser.GetRandomValue();
             int sourceChoice = m_QuestSourceChoser.GetRandomValue();
+            int itemRewardChance;
 
             IQuestReward additionalReward = null;
             IQuestSource qSource;
             if (sourceChoice == 0) {
                 qSource = ReputationGenerator.GenerateReputationInstance(new QuestSourceRumor());
+                itemRewardChance = 15;
             } else if (sourceChoice == 1) {
                 qSource = ReputationManager.GetRandomFaction();
                 QuestSourceFaction factionSource = qSource as QuestSourceFaction;
+                itemRewardChance = 25;
+
                 if (Random.Range(0, daysSinceHeroRecruit) == 0) {
                     additionalReward = new QuestRewardHero(factionSource);
                     daysSinceHeroRecruit = Random.Range(10, 20);
@@ -44,10 +49,17 @@ namespace Rondo.QuestSim.Quests {
                 daysSinceFactionRecruit--;
             } else {
                 qSource = ReputationGenerator.GenerateReputationInstance(new QuestSourcePerson(EnumUtility.GetRandomEnumValue<ReputationBiases>()));
+                itemRewardChance = 5;
             }
 
             QuestInstance quest = GenerateQuestInstance(qSource, questObjectiveSize);
             quest.AdditionalReward = additionalReward;
+
+            if (Random.Range(0, itemRewardChance) == 0) {
+                GameItem itemReward = GameItemGenerator.GenerateItem(GetItemRarityForDifficulty(quest.DifficultyLevel));
+                quest.HandlerItemReward = new QuestRewardItem(itemReward);
+            }
+
             return quest;
         }
 
@@ -57,6 +69,10 @@ namespace Rondo.QuestSim.Quests {
             quest.DifficultyLevel = questSource.QuestDifficulty;
             quest.QuestType = EnumUtility.GetRandomEnumValue<QuestTypes>();
             return quest;
+        }
+
+        private static GameItemRarity GetItemRarityForDifficulty(int difficulty) {
+            return (GameItemRarity)(difficulty / 2);
         }
 
     }

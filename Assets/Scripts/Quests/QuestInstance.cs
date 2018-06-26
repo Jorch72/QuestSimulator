@@ -25,6 +25,7 @@ namespace Rondo.QuestSim.Quests {
         public QuestRewardGold GoldReward { get; set; }
         public QuestRewardItem ItemReward { get; set; }
         public IQuestReward AdditionalReward { get; set; }
+        public QuestRewardItem HandlerItemReward { get; set; }
         public int DaysLeftOnPost { get; set; }
         public int DaysLeftOnQuest { get { return m_DaysLeftOnQuest; } set { m_DaysLeftOnQuest = value; OnDaysLeftUpdate(); } }
         public string HandlerGoldRewardEstimate { get { return Mathf.RoundToInt(HandlerAverageExpectedGoldReward * HANDLER_GOLD_VARIANCE_MIN) + " - " + Mathf.RoundToInt(HandlerAverageExpectedGoldReward * HANDLER_GOLD_VARIANCE_MAX); } }
@@ -34,7 +35,7 @@ namespace Rondo.QuestSim.Quests {
         private int AverageExpectedGoldReward { get { return Mathf.RoundToInt((DifficultyLevel + 1) * 20 * (DurationInDays * 0.25f)); } }
         private float AverageExpectedItemReward { get { return (DifficultyLevel + 1) * 20 * (DurationInDays * 0.5f); } }
         private int ExperiencePoints { get { return (DifficultyLevel + 1) * 5 * DurationInDays; } }
-        private int HandlerAverageExpectedGoldReward { get { return Mathf.RoundToInt(AverageExpectedGoldReward * 1.5f); } }
+        private int HandlerAverageExpectedGoldReward { get { return Mathf.RoundToInt(AverageExpectedGoldReward * 1.5f * (HandlerItemReward == null ? 1 : 0.5f)); } }
 
         private int m_DurationInDays;
         private int m_DaysLeftOnQuest;
@@ -66,7 +67,7 @@ namespace Rondo.QuestSim.Quests {
         }
 
         public void CompleteQuest(HeroInstance hero) {
-            if(ItemReward != null) ItemReward.ApplyReward(hero);
+            if (ItemReward != null) ItemReward.ApplyReward(hero);
             if (AdditionalReward != null) AdditionalReward.ApplyReward(hero);
 
             hero.Experience += ExperiencePoints;
@@ -75,6 +76,7 @@ namespace Rondo.QuestSim.Quests {
             QuestSourceFaction faction = HeroManager.GetHeroFaction(hero);
             ReputationManager.GetReputationTracker(faction).ModifyReputation(ExperiencePoints * 0.1f);
 
+            if (HandlerItemReward != null) InventoryManager.OwnedItems.Add(HandlerItemReward.Item);
             InventoryManager.Gold += Mathf.RoundToInt(HandlerAverageExpectedGoldReward * UnityEngine.Random.Range(HANDLER_GOLD_VARIANCE_MIN, HANDLER_GOLD_VARIANCE_MAX));
             InventoryManager.Stars += DifficultyLevel;
         }
