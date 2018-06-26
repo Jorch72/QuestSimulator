@@ -12,10 +12,10 @@ namespace Rondo.QuestSim.Quests.Rewards {
 
         public HeroInstance Hero { get; private set; }
         public float RewardValue { get { return Hero.PowerLevel; } }
-        public string DisplayValue { get { return "Hero - "+  Hero.DisplayName; } }
+        public string DisplayValue { get { return "Lv" + Hero.Level + " Hero - "+  Hero.DisplayName; } }
 
         public QuestRewardHero(QuestSourceFaction faction) {
-            Hero = HeroGenerator.GenerateHero(faction, false);
+            Hero = HeroGenerator.GenerateHero(faction, Mathf.Clamp(faction.AverageHeroLevel + Random.Range(-5, 5), 1, 100), false);
         }
 
         public void ApplyReward(HeroInstance hero) {

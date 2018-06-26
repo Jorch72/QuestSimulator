@@ -26,6 +26,10 @@ namespace Rondo.QuestSim.UI.ActiveQuests {
             m_Button.onClick.AddListener(OpenQuestWindow);
         }
 
+        private void OnDestroy() {
+            m_QuestInstance.OnDaysLeftUpdate -= UpdateText;
+        }
+
         private void OpenQuestWindow() {
             QuestDetailsWindow.Instance.OpenWindow(m_QuestInstance, m_QuestMode);
         }
@@ -40,6 +44,8 @@ namespace Rondo.QuestSim.UI.ActiveQuests {
             } else {
                 m_QuestMode = QuestDetailsWindow.QuestMode.ACTIVE_REVIEW;
             }
+
+            m_QuestInstance.OnDaysLeftUpdate += UpdateText;
 
             UpdateText();
         }

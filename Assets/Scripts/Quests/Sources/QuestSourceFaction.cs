@@ -30,6 +30,8 @@ namespace Rondo.QuestSim.Quests.Sources {
         public float questPreferenceChores = 0.5f;
 
         public int QuestDifficulty { get { return GetQuestDifficulty(); } }
+        public int AverageQuestDifficulty { get { return GetAverageQuestDifficulty(); } }
+        public int AverageHeroLevel { get { return GetAverageHeroLevel(); } }
 
         public ReputationBiases personalityType = ReputationBiases.VILLAGERS;
         private ReputationNameConventions m_NamingConvention;
@@ -37,25 +39,42 @@ namespace Rondo.QuestSim.Quests.Sources {
         //Heroes
         public List<HeroInstance> Heroes { get; set; }
 
+        public int initialHeroLevel = 1;
+
         public void GenerateSettings() {
             ReputationGenerator.GenerateQuestPreferences(this, personalityType);
             ReputationGenerator.GenerateName(this, ReputationNameConventions.GROUP);
 
             for(int i = 0; i < Random.Range(MIN_HEROES_PER_FACTION, MAX_HEROES_PER_FACTION + 1); i++) {
-                Heroes.Add(HeroGenerator.GenerateHero(this, true));
+                Debug.Log("Hero level = " + initialHeroLevel);
+                Heroes.Add(HeroGenerator.GenerateHero(this, Mathf.Clamp(initialHeroLevel + Random.Range(-1, 1), 1, 100), true));
             }
         }
 
-        private int GetQuestDifficulty() {
-            int totalHeroDifficulty = 0;
+        private int GetAverageHeroLevel() {
+            int totalHeroLevel = 0;
 
-            foreach(HeroInstance hero in Heroes) {
-                totalHeroDifficulty += hero.QuestPrefDifficulty;
+            foreach (HeroInstance hero in Heroes) {
+                totalHeroLevel += hero.Level;
             }
 
-            totalHeroDifficulty /= Heroes.Count;
-            totalHeroDifficulty = Mathf.Clamp(totalHeroDifficulty + Random.Range(-2, 2), 0, 10);
-            return totalHeroDifficulty;
+            totalHeroLevel /= Heroes.Count;
+            return totalHeroLevel;
+        }
+
+        private int GetAverageQuestDifficulty() {
+            float totalQuestDifficulty = 0;
+
+            foreach(HeroInstance hero in Heroes) {
+                totalQuestDifficulty += hero.QuestPrefDifficultyFloat;
+            }
+
+            totalQuestDifficulty /= Heroes.Count;
+            return Mathf.RoundToInt(totalQuestDifficulty);
+        }
+
+        private int GetQuestDifficulty() {
+            return Mathf.Clamp(GetAverageQuestDifficulty() + Random.Range(-2, 2), 0, 10);
         }
     }
 }

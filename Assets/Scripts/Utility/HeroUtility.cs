@@ -24,6 +24,18 @@ namespace Rondo.Generic.Utility {
             normalizedProgress = 1 - (((float)expRequired - totalExpLeft) / expRequired);
         }
 
+        public static int GetTotalExperienceRequiredForLevel(int level) {
+            int currentLevel = 1;
+            int totalExp = 0;
+            int expRequired = 10;
+            while (currentLevel < level) {
+                currentLevel++;
+                expRequired = Mathf.RoundToInt(expRequired * 1.25f);
+                totalExp += expRequired;
+            }
+            return totalExp;
+        }
+
     }
 
 }

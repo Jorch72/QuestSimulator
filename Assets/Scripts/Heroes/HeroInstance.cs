@@ -18,12 +18,13 @@ namespace Rondo.QuestSim.Heroes {
         public QuestSourceFaction Faction { get { return HeroManager.GetHeroFaction(this); } }
         public HeroStates HeroState { get { return m_HeroState; } set { m_HeroState = value; OnStateChange(); } }
 
-        public int Level { get { return (Experience / 20) + 1; } }
+        public int Level { get { return m_Level; } }
         public float LevelProgress { get { return HeroState != HeroStates.UNDISCOVERED ? m_LevelProgress : 0; } }
         public int PowerLevel { get { return Mathf.RoundToInt((EquipmentLevel * 0.5f) + (Level + 1)); } }
 
         public Dictionary<QuestTypes, float> QuestTypePreferences { get; set; }
-        public int QuestPrefDifficulty { get { return Mathf.RoundToInt(Level / 5f); } }
+        public int QuestPrefDifficulty { get { return Mathf.RoundToInt(QuestPrefDifficultyFloat); } }
+        public float QuestPrefDifficultyFloat { get { return Level / 5f; } }
         public float QuestPrefRewardItem { get; set; }
         public float QuestPrefRewardGold { get; set; }
 

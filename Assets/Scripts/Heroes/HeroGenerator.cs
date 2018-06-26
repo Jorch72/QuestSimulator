@@ -12,13 +12,13 @@ namespace Rondo.QuestSim.Heroes {
 
     public static class HeroGenerator {
 
-        public static HeroInstance GenerateHero(QuestSourceFaction faction, bool addToRoster) {
+        public static HeroInstance GenerateHero(QuestSourceFaction faction, int level, bool addToRoster) {
             HeroInstance newHero = new HeroInstance();
 
             newHero.DisplayName = NameDatabase.GetHeroName();
             //newHero.Nickname = UnityEngine.Random.Range(0, 4) == 0 ? NameDatabase.GetCompoundName() : "";
             newHero.Class = EnumUtility.GetRandomEnumValue<HeroClasses>();
-            newHero.Experience = 0;
+            newHero.Experience = HeroUtility.GetTotalExperienceRequiredForLevel(level);
             newHero.EquipmentLevel = UnityEngine.Random.Range(0, 100);
             newHero.HeroState = HeroStates.IDLE;
 

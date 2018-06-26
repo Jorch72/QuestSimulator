@@ -159,9 +159,9 @@ namespace Rondo.QuestSim.UI.PostedQuests {
 
             switch (mode) {
                 case QuestMode.SETUP:
-                    closeButton.gameObject.SetActive(false);
+                    closeButton.gameObject.SetActive(true);
                     skipButton.gameObject.SetActive(false);
-                    cancelButton.gameObject.SetActive(true);
+                    cancelButton.gameObject.SetActive(false);
                     acceptButton.gameObject.SetActive(false);
                     completeButton.gameObject.SetActive(false);
                     postButton.gameObject.SetActive(true);
@@ -220,7 +220,7 @@ namespace Rondo.QuestSim.UI.PostedQuests {
             heroSelectionInstance.gameObject.SetActive(mode == QuestMode.HERO_SELECT);
             heroSelectedInstance.gameObject.SetActive(mode != QuestMode.HERO_SELECT);
 
-            questTitle.text = "<b><u>" + m_CurrentQuest.QuestSource.RequestTitle + "</u></b>\n<size=18><i>" + m_CurrentQuest.ObjectiveCount + " Objective" + (m_CurrentQuest.ObjectiveCount > 1 ? "s" : "") + "</i></size>";
+            questTitle.text = "<b><u>" + m_CurrentQuest.QuestSource.RequestTitle + "</u>\n<size=18>" + m_CurrentQuest.QuestTypeDisplay + " - </b><i>" + m_CurrentQuest.DurationInDays + " Day" + (m_CurrentQuest.DurationInDays > 1 ? "s" : "") + " duration</i></size>";
             difficultyText.text = ""+ m_CurrentQuest.DifficultyLevel;
             heroGoldRewardText.text = ""+m_CurrentQuest.GoldReward.GoldCount;
             heroRewardItemInstance.SetItem(m_CurrentQuest.ItemReward);

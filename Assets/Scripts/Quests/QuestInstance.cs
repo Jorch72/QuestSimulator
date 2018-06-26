@@ -4,6 +4,7 @@ using Rondo.QuestSim.Inventory;
 using Rondo.QuestSim.Quests.Rewards;
 using Rondo.QuestSim.Quests.Sources;
 using Rondo.QuestSim.Reputation;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,29 +17,32 @@ namespace Rondo.QuestSim.Quests {
         private static float HANDLER_GOLD_VARIANCE_MAX = 1.2f;
 
         public string DisplayName { get; set; }
-        public int ObjectiveCount { get; set; }
+        public int DurationInDays { get { return m_DurationInDays; } set { m_DurationInDays = value; DaysLeftOnQuest = value; } }
         public IQuestSource QuestSource { get; private set; }
         public QuestTypes QuestType { get; set; }
+        public string QuestTypeDisplay { get { return QuestType.ToString().Replace('_', ' '); } }
         public int DifficultyLevel { get; set; }
         public QuestRewardGold GoldReward { get; set; }
         public QuestRewardItem ItemReward { get; set; }
         public IQuestReward AdditionalReward { get; set; }
-        public List<QuestRewardHero> HeroRewards { get; set; }
         public int DaysLeftOnPost { get; set; }
-        public int DaysLeftOnQuest { get; set; }
+        public int DaysLeftOnQuest { get { return m_DaysLeftOnQuest; } set { m_DaysLeftOnQuest = value; OnDaysLeftUpdate(); } }
         public string HandlerGoldRewardEstimate { get { return Mathf.RoundToInt(HandlerAverageExpectedGoldReward * HANDLER_GOLD_VARIANCE_MIN) + " - " + Mathf.RoundToInt(HandlerAverageExpectedGoldReward * HANDLER_GOLD_VARIANCE_MAX); } }
 
-        private int AverageExpectedGoldReward { get { return Mathf.RoundToInt((DifficultyLevel + 1) * 10 * (ObjectiveCount * 0.75f)); } }
-        private float AverageExpectedItemReward { get { return (DifficultyLevel + 1) * 20 * (ObjectiveCount * 0.5f); } }
-        private int ExperiencePoints { get { return (DifficultyLevel + 1) * 5 * ObjectiveCount; } }
+        public Action OnDaysLeftUpdate = delegate { };
+
+        private int AverageExpectedGoldReward { get { return Mathf.RoundToInt((DifficultyLevel + 1) * 20 * (DurationInDays * 0.25f)); } }
+        private float AverageExpectedItemReward { get { return (DifficultyLevel + 1) * 20 * (DurationInDays * 0.5f); } }
+        private int ExperiencePoints { get { return (DifficultyLevel + 1) * 5 * DurationInDays; } }
         private int HandlerAverageExpectedGoldReward { get { return Mathf.RoundToInt(AverageExpectedGoldReward * 1.5f); } }
+
+        private int m_DurationInDays;
+        private int m_DaysLeftOnQuest;
 
         public QuestInstance(IQuestSource source) {
             QuestSource = source;
             GoldReward = new QuestRewardGold();
-            HeroRewards = new List<QuestRewardHero>();
             DaysLeftOnPost = 5;
-            DaysLeftOnQuest = 3;
 
             DisplayName = "Quest name";
         }
@@ -71,7 +75,7 @@ namespace Rondo.QuestSim.Quests {
             QuestSourceFaction faction = HeroManager.GetHeroFaction(hero);
             ReputationManager.GetReputationTracker(faction).ModifyReputation(ExperiencePoints * 0.1f);
 
-            InventoryManager.Gold += Mathf.RoundToInt(HandlerAverageExpectedGoldReward * Random.Range(HANDLER_GOLD_VARIANCE_MIN, HANDLER_GOLD_VARIANCE_MAX));
+            InventoryManager.Gold += Mathf.RoundToInt(HandlerAverageExpectedGoldReward * UnityEngine.Random.Range(HANDLER_GOLD_VARIANCE_MIN, HANDLER_GOLD_VARIANCE_MAX));
             InventoryManager.Stars += DifficultyLevel;
         }
 

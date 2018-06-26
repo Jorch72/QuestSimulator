@@ -47,7 +47,6 @@ namespace Rondo.QuestSim.Gameplay {
             }
 
             while (m_ActiveQuestsToUpdate.Count != 0) {
-                //Show reward thing, for now just give everything
                 QuestInstance activeQuest = m_ActiveQuestsToUpdate[m_ActiveQuestsToUpdate.Count -1];
                 activeQuest.DaysLeftOnQuest--;
 
@@ -76,8 +75,8 @@ namespace Rondo.QuestSim.Gameplay {
             OnNextDay();
 
             QuestManager.PostedQuests = UpdateQuestTimeLimits(QuestManager.PostedQuests, 0);
-            QuestManager.Requests = UpdateQuestTimeLimits(QuestManager.Requests, 1);
-            InventoryManager.Gold -= 10;
+            QuestManager.Requests = UpdateQuestTimeLimits(QuestManager.Requests, 0);
+            InventoryManager.Gold -= 4;
 
             NightFadeUI.Instance.Disable(()=> { });
             QuestDetailsWindow.Instance.OnWindowClose -= NextDayStep;

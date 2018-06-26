@@ -20,8 +20,12 @@ namespace Rondo.QuestSim.Reputation {
         private static QuestSourceFaction AddRandomFaction() {
             QuestSourceFaction newFaction = new QuestSourceFaction(ReputationBiases.UNKNOWN);
             QuestSourceFaction newRep = ReputationGenerator.GenerateReputationInstance(newFaction, ReputationBiases.UNKNOWN);
-            AddFactionRepInstance(newRep);
+            AddFaction(newRep);
             return newFaction;
+        }
+
+        public static void AddFaction(QuestSourceFaction faction) {
+            AddFactionRepInstance(faction);
         }
 
         public static void AddFactionRepInstance(QuestSourceFaction instance) {

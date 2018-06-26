@@ -19,6 +19,7 @@ namespace Rondo.QuestSim.Quests {
             new int[5] { 5, 3, 3, 2, 1 });
 
         public static int daysSinceHeroRecruit = Random.Range(10, 20);
+        public static int daysSinceFactionRecruit = Random.Range(25, 35);
 
         public static QuestInstance GenerateQuestInstance() {
             int questObjectiveSize = m_QuestSizeChoser.GetRandomValue();
@@ -30,11 +31,15 @@ namespace Rondo.QuestSim.Quests {
                 qSource = ReputationGenerator.GenerateReputationInstance(new QuestSourceRumor());
             } else if (sourceChoice == 1) {
                 qSource = ReputationManager.GetRandomFaction();
+                QuestSourceFaction factionSource = qSource as QuestSourceFaction;
                 if (Random.Range(0, daysSinceHeroRecruit) == 0) {
-                    additionalReward = new QuestRewardHero(qSource as QuestSourceFaction);
+                    additionalReward = new QuestRewardHero(factionSource);
                     daysSinceHeroRecruit = Random.Range(10, 20);
+                } else if (Random.Range(0, daysSinceFactionRecruit) == 0) {
+                    additionalReward = new QuestRewardFaction(factionSource.AverageHeroLevel + Random.Range(3, 6));
+                    daysSinceFactionRecruit = Random.Range(25, 35);
                 }
-            } else {
+                } else {
                 qSource = ReputationGenerator.GenerateReputationInstance(new QuestSourcePerson(EnumUtility.GetRandomEnumValue<ReputationBiases>()));
             }
 
@@ -45,7 +50,7 @@ namespace Rondo.QuestSim.Quests {
 
         public static QuestInstance GenerateQuestInstance(IQuestSource questSource, int objectiveCount = 1) {
             QuestInstance quest = new QuestInstance(questSource);
-            quest.ObjectiveCount = objectiveCount;
+            quest.DurationInDays = objectiveCount;
             quest.DifficultyLevel = questSource.QuestDifficulty;
             quest.QuestType = EnumUtility.GetRandomEnumValue<QuestTypes>();
             return quest;

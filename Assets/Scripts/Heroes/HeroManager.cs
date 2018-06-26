@@ -19,6 +19,7 @@ namespace Rondo.QuestSim.Heroes {
         public static void AddHero(HeroInstance instance, QuestSourceFaction faction) {
             if (m_Heroes.ContainsKey(instance)) return;
             m_Heroes.Add(instance, faction);
+            ReputationUI.Instance.CreateHeroInstance(instance);
         }
 
         public static HeroInstance GetRandomHero() {

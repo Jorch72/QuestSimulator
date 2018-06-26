@@ -59,7 +59,7 @@ LightmapSettings:
     m_Resolution: 2
     m_BakeResolution: 10
     m_AtlasSize: 512
-    m_AO: 0
+    m_AO: 1
     m_AOMaxDistance: 1
     m_CompAOExponent: 1
     m_CompAOExponentDirect: 0
@@ -4443,16 +4443,6 @@ Prefab:
       propertyPath: m_RootOrder
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 108186074213802580, guid: 2decfbe8d2d8d1d47a1a289de55ea912,
-        type: 2}
-      propertyPath: m_Range
-      value: 42.24
-      objectReference: {fileID: 0}
-    - target: {fileID: 108186074213802580, guid: 2decfbe8d2d8d1d47a1a289de55ea912,
-        type: 2}
-      propertyPath: m_Lightmapping
-      value: 2
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 2decfbe8d2d8d1d47a1a289de55ea912, type: 2}
   m_IsPrefabParent: 0
@@ -4586,7 +4576,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &447886314
 Transform:
   m_ObjectHideFlags: 0
@@ -7557,31 +7547,9 @@ Prefab:
       propertyPath: m_RootOrder
       value: 3
       objectReference: {fileID: 0}
-    - target: {fileID: 108186074213802580, guid: 2decfbe8d2d8d1d47a1a289de55ea912,
-        type: 2}
-      propertyPath: m_Range
-      value: 42.24
-      objectReference: {fileID: 0}
-    - target: {fileID: 108186074213802580, guid: 2decfbe8d2d8d1d47a1a289de55ea912,
-        type: 2}
-      propertyPath: m_Lightmapping
-      value: 2
-      objectReference: {fileID: 0}
     - target: {fileID: 1317261543564034, guid: 2decfbe8d2d8d1d47a1a289de55ea912, type: 2}
       propertyPath: m_Name
       value: Torch (2)
-      objectReference: {fileID: 0}
-    - target: {fileID: 4069906924484038, guid: 2decfbe8d2d8d1d47a1a289de55ea912, type: 2}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 180.00002
-      objectReference: {fileID: 0}
-    - target: {fileID: 4069906924484038, guid: 2decfbe8d2d8d1d47a1a289de55ea912, type: 2}
-      propertyPath: m_LocalScale.x
-      value: 1.0000005
-      objectReference: {fileID: 0}
-    - target: {fileID: 4069906924484038, guid: 2decfbe8d2d8d1d47a1a289de55ea912, type: 2}
-      propertyPath: m_LocalScale.z
-      value: 1.0000005
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 2decfbe8d2d8d1d47a1a289de55ea912, type: 2}
@@ -7666,7 +7634,7 @@ Light:
   m_SpotAngle: 30
   m_CookieSize: 10
   m_Shadows:
-    m_Type: 1
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -7680,12 +7648,12 @@ Light:
   m_CullingMask:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_Lightmapping: 4
+  m_Lightmapping: 1
   m_AreaSize: {x: 1, y: 1}
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_ShadowRadius: 0
+  m_ShadowRadius: 20
   m_ShadowAngle: 0
 --- !u!1 &769643019
 GameObject:
@@ -10831,23 +10799,9 @@ Prefab:
       propertyPath: m_RootOrder
       value: 2
       objectReference: {fileID: 0}
-    - target: {fileID: 108186074213802580, guid: 2decfbe8d2d8d1d47a1a289de55ea912,
-        type: 2}
-      propertyPath: m_Range
-      value: 42.24
-      objectReference: {fileID: 0}
-    - target: {fileID: 108186074213802580, guid: 2decfbe8d2d8d1d47a1a289de55ea912,
-        type: 2}
-      propertyPath: m_Lightmapping
-      value: 2
-      objectReference: {fileID: 0}
     - target: {fileID: 1317261543564034, guid: 2decfbe8d2d8d1d47a1a289de55ea912, type: 2}
       propertyPath: m_Name
       value: Torch (1)
-      objectReference: {fileID: 0}
-    - target: {fileID: 4069906924484038, guid: 2decfbe8d2d8d1d47a1a289de55ea912, type: 2}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 90.00001
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 2decfbe8d2d8d1d47a1a289de55ea912, type: 2}

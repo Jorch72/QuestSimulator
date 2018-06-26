@@ -1,5 +1,6 @@
 ﻿using Rondo.Generic.Utility;
 using Rondo.QuestSim.Heroes;
+using Rondo.QuestSim.Quests.Sources;
 using Rondo.QuestSim.Reputation;
 using System;
 using System.Collections;
@@ -18,6 +19,7 @@ namespace Rondo.QuestSim.UI.Reputation {
 
         private RectTransform m_RectTransform;
         private Dictionary<HeroInstance, ReputationHeroInstanceUI> m_HeroInstances = new Dictionary<HeroInstance, ReputationHeroInstanceUI>();
+        private Dictionary<QuestSourceFaction, ReputationInstanceUI> m_FactionInstances = new Dictionary<QuestSourceFaction, ReputationInstanceUI>();
         private Action<HeroInstance> m_OnHeroClicked;
 
         private void Awake() {
@@ -36,11 +38,18 @@ namespace Rondo.QuestSim.UI.Reputation {
             newInstance.GetComponent<RectTransform>().SetParent(reputationInstanceParent);
             newInstance.ApplyReputation(tracker);
 
-            foreach(HeroInstance hero in tracker.FactionInstance.Heroes) {
-                ReputationHeroInstanceUI heroInstanceUI = newInstance.AddHero(heroInstancePrefab, hero);
-                m_HeroInstances.Add(hero, heroInstanceUI);
-                heroInstanceUI.GetComponent<Button>().onClick.AddListener(() => { OnHeroClick(heroInstanceUI); });
+            m_FactionInstances.Add(tracker.FactionInstance, newInstance);
+
+            foreach (HeroInstance hero in tracker.FactionInstance.Heroes) {
+                CreateHeroInstance(hero);
             }
+        }
+
+        public void CreateHeroInstance(HeroInstance hero) {
+            if (!m_FactionInstances.ContainsKey(hero.Faction) || m_HeroInstances.ContainsKey(hero)) return;
+            ReputationHeroInstanceUI heroInstanceUI = m_FactionInstances[hero.Faction].AddHero(heroInstancePrefab, hero);
+            m_HeroInstances.Add(hero, heroInstanceUI);
+            heroInstanceUI.GetComponent<Button>().onClick.AddListener(() => { OnHeroClick(heroInstanceUI); });
         }
 
         public void SetAvailableHeroes(List<HeroInstance> heroes, Action<HeroInstance> onHeroClick) {

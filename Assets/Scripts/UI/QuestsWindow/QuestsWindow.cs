@@ -1,4 +1,5 @@
 ﻿using Rondo.Generic.Utility;
+using Rondo.QuestSim.Gameplay;
 using Rondo.QuestSim.Quests;
 using Rondo.QuestSim.Quests.Sources;
 using Rondo.QuestSim.Reputation;
@@ -26,6 +27,10 @@ namespace Rondo.QuestSim.UI.ActiveQuests {
 
             openCloseToggle.onClick.AddListener(ToggleOpenCloseState);
             gameObject.SetActive(false);
+        }
+
+        private void Start() {
+            DayManager.Instance.OnNextDay += Reload;
         }
 
         private void OnEnable() {
