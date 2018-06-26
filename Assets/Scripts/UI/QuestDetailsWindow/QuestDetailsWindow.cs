@@ -142,6 +142,8 @@ namespace Rondo.QuestSim.UI.PostedQuests {
         }
 
         private void CloseWindow() {
+            m_CurrentQuest = null;
+
             gameObject.SetActive(false);
             ReputationUI.Instance.ResetAvailableHeroes();
             OnWindowClose();
@@ -224,7 +226,7 @@ namespace Rondo.QuestSim.UI.PostedQuests {
             difficultyText.text = ""+ m_CurrentQuest.DifficultyLevel;
             heroGoldRewardText.text = ""+m_CurrentQuest.GoldReward.GoldCount;
             heroRewardItemInstance.SetItem(m_CurrentQuest.ItemReward);
-            heroGoldRewardInput.text = "0";
+            if(heroGoldRewardInput.gameObject.activeSelf) heroGoldRewardInput.text = "0";
 
             handlerGoldReward.text = m_CurrentQuest.HandlerGoldRewardEstimate;
             handlerRewardItemInstance.SetItem((GameItem)null);

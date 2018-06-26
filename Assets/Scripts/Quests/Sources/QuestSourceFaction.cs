@@ -46,7 +46,6 @@ namespace Rondo.QuestSim.Quests.Sources {
             ReputationGenerator.GenerateName(this, ReputationNameConventions.GROUP);
 
             for(int i = 0; i < Random.Range(MIN_HEROES_PER_FACTION, MAX_HEROES_PER_FACTION + 1); i++) {
-                Debug.Log("Hero level = " + initialHeroLevel);
                 Heroes.Add(HeroGenerator.GenerateHero(this, Mathf.Clamp(initialHeroLevel + Random.Range(-1, 1), 1, 100), true));
             }
         }

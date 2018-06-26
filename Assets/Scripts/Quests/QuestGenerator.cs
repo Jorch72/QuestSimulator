@@ -39,7 +39,7 @@ namespace Rondo.QuestSim.Quests {
                     additionalReward = new QuestRewardFaction(factionSource.AverageHeroLevel + Random.Range(3, 6));
                     daysSinceFactionRecruit = Random.Range(25, 35);
                 }
-                } else {
+            } else {
                 qSource = ReputationGenerator.GenerateReputationInstance(new QuestSourcePerson(EnumUtility.GetRandomEnumValue<ReputationBiases>()));
             }
 

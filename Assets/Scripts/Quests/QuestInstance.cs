@@ -81,6 +81,7 @@ namespace Rondo.QuestSim.Quests {
 
         public void RefundQuestRewards(bool refundGold, bool refundItem) {
             if (refundGold) {
+                Debug.Log("Refunding gold: " + GoldReward.GoldCount);
                 InventoryManager.Gold += GoldReward.GoldCount;
             }
 

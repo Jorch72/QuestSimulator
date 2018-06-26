@@ -32,8 +32,12 @@ namespace Rondo.QuestSim.Heroes {
                 newHero.QuestTypePreferences[questType] = tempQuestValues[questType] / tempQuestValuesTotal;
             }
 
+            float offset = 0.25f;
             newHero.QuestPrefRewardGold = UnityEngine.Random.Range(0f, 1f);
             newHero.QuestPrefRewardItem = 1 - newHero.QuestPrefRewardGold;
+            newHero.QuestPrefRewardGold += offset;
+            newHero.QuestPrefRewardItem += offset;
+
 
             if (addToRoster) {
                 HeroManager.AddHero(newHero, faction);
