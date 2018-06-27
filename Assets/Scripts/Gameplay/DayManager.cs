@@ -108,7 +108,6 @@ namespace Rondo.QuestSim.Gameplay {
         }
 
         private IEnumerator SunRotateRoutine(bool toDay) {
-            Debug.Log("Sun rotate thing: " + toDay);
             float duration = 1.5f;
             float startTime = Time.time;
             float currentValue = 0;

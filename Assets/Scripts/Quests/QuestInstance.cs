@@ -35,7 +35,7 @@ namespace Rondo.QuestSim.Quests {
         private int AverageExpectedGoldReward { get { return Mathf.RoundToInt((DifficultyLevel + 1) * 20 * (DurationInDays * 0.25f)); } }
         private float AverageExpectedItemReward { get { return (DifficultyLevel + 1) * 20 * (DurationInDays * 0.5f); } }
         private int ExperiencePoints { get { return (DifficultyLevel + 1) * 5 * DurationInDays; } }
-        private int HandlerAverageExpectedGoldReward { get { return Mathf.RoundToInt(AverageExpectedGoldReward * 1.5f * (HandlerItemReward == null ? 1 : 0.5f)); } }
+        private int HandlerAverageExpectedGoldReward { get { return Mathf.RoundToInt(AverageExpectedGoldReward * 2 * (HandlerItemReward == null ? 1 : 0.5f)); } }
 
         private int m_DurationInDays;
         private int m_DaysLeftOnQuest;
@@ -49,6 +49,8 @@ namespace Rondo.QuestSim.Quests {
         }
 
         public bool WouldHeroAccept(HeroInstance hero) {
+            if (hero.HeroState == HeroStates.WOUNDED || hero.HeroState == HeroStates.DEAD) return false;
+
             float preferenceValue = 0;
 
             preferenceValue += (hero.QuestPrefRewardGold / AverageExpectedGoldReward) * (GoldReward.RewardValue);
@@ -62,11 +64,56 @@ namespace Rondo.QuestSim.Quests {
             return preferenceValue > 0.7f;
         }
 
+        public int GetHeroSuccessRate(HeroInstance hero) {
+            float successChance = 95 * (1 - ((float)DifficultyLevel).Map(0, 10, 0, 1));
+
+            //Star difference
+            float starDiff = hero.QuestPrefDifficultyFloat - DifficultyLevel;
+            successChance += (starDiff * 10);
+
+            float heroPowerDiff = hero.PowerLevel - hero.BasePowerLevel;
+            successChance += (heroPowerDiff / hero.Level) * 0.1f;
+
+            return Mathf.Clamp(Mathf.RoundToInt(successChance), 0, 100);
+        }
+
         private float GetTotalItemRewardValue() {
             return ItemReward != null ? ItemReward.RewardValue : 0;
         }
 
-        public void CompleteQuest(HeroInstance hero) {
+        public bool CompleteQuest(HeroInstance hero) {
+
+            //Check if the hero completed it or not
+            int successRate = GetHeroSuccessRate(hero);
+            int failChance = UnityEngine.Random.Range(0, 101);
+            if (failChance > successRate) {
+                RefundQuestRewards(true, true);
+
+                /*
+                 * success = 20
+                 * death chance = 80 - 10 = 70
+                 * 
+                 * success = 100
+                 * death chance = 0 - 50 = -50
+                 * 
+                 * success = 0
+                 * death chance = 100 - 0 = 100
+                 * 
+                 * success = 50
+                 * death chance = 50 - 50 = 0
+                 * 
+                 */
+
+                failChance = UnityEngine.Random.Range(0, 101);
+                if (failChance < 100 - successRate) {
+                    hero.HeroState = HeroStates.DEAD;
+                } else {
+                    hero.HeroState = HeroStates.WOUNDED;
+                    hero.WoundedDays = ((100 - successRate) / 10) + 4;
+                }
+                return false;
+            }
+
             if (ItemReward != null) ItemReward.ApplyReward(hero);
             if (AdditionalReward != null) AdditionalReward.ApplyReward(hero);
 
@@ -79,6 +126,7 @@ namespace Rondo.QuestSim.Quests {
             if (HandlerItemReward != null) InventoryManager.OwnedItems.Add(HandlerItemReward.Item);
             InventoryManager.Gold += Mathf.RoundToInt(HandlerAverageExpectedGoldReward * UnityEngine.Random.Range(HANDLER_GOLD_VARIANCE_MIN, HANDLER_GOLD_VARIANCE_MAX));
             InventoryManager.Stars += DifficultyLevel;
+            return true;
         }
 
         public void RefundQuestRewards(bool refundGold, bool refundItem) {

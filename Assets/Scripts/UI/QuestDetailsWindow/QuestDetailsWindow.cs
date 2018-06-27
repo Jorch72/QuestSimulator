@@ -20,6 +20,7 @@ namespace Rondo.QuestSim.UI.PostedQuests {
 
         public TextMeshProUGUI questTitle;
         public TextMeshProUGUI difficultyText;
+        public TextMeshProUGUI successText;
         public Button closeButton;
         public Button skipButton;
         public Button cancelButton;
@@ -85,8 +86,7 @@ namespace Rondo.QuestSim.UI.PostedQuests {
             });
 
             completeButton.onClick.AddListener(() => {
-                QuestManager.ActiveQuests[m_CurrentQuest].HeroState = HeroStates.IDLE;
-
+                HeroManager.SetHeroToIdle(QuestManager.ActiveQuests[m_CurrentQuest]);
                 QuestManager.ActiveQuests.Remove(m_CurrentQuest);
                 QuestsWindow.Instance.Reload();
                 CloseWindow();
@@ -242,19 +242,40 @@ namespace Rondo.QuestSim.UI.PostedQuests {
             }
 
             ReputationUI.Instance.SetAvailableHeroes(m_AvailableHeroes, SetSelectedHero);
+            successText.text = "-";
         }
 
         private void SetSelectedHero(HeroInstance hero) {
             m_SelectedHero = hero;
             heroSelectionInstance.GetComponentInChildren<ReputationHeroInstanceUI>(true).ApplyHero(m_SelectedHero);
+
+            successText.text = GetSuccessRateForPercentage(m_CurrentQuest.GetHeroSuccessRate(hero));
         }
 
         private void FindActiveHero() {
-            heroSelectedInstance.GetComponentInChildren<ReputationHeroInstanceUI>(true).ApplyHero(QuestManager.ActiveQuests[m_CurrentQuest]);
+            HeroInstance hero = QuestManager.ActiveQuests[m_CurrentQuest];
+            heroSelectedInstance.GetComponentInChildren<ReputationHeroInstanceUI>(true).ApplyHero(hero);
+            successText.text = GetSuccessRateForPercentage(m_CurrentQuest.GetHeroSuccessRate(hero));
         }
 
         private void SetNoHero() {
             heroSelectedInstance.GetComponentInChildren<ReputationHeroInstanceUI>(true).ApplyHero(null);
+            successText.text = "-";
+        }
+
+        private string GetSuccessRateForPercentage(int percentage) {
+            string s;
+            if (percentage >= 95) s = "Extremely high";
+            else if (percentage >= 85) s = "Very high";
+            else if (percentage >= 70) s = "High";
+            else if (percentage >= 50) s = "Average";
+            else if (percentage >= 30) s = "Low";
+            else if (percentage >= 15) s = "Very low";
+            else s = "Extremely low";
+
+            //If can see percentages
+            if (true) s += " (" + percentage + "%)";
+            return s;
         }
 
         private void RefreshItemRewardDropdown() {

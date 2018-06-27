@@ -19,7 +19,7 @@ namespace Rondo.QuestSim.Quests.Sources {
 
         //Display options
         public string DisplayName { get; set; }
-        public string RequestTitle { get { return "A request from " + DisplayName; } }
+        public string RequestTitle { get { return "Request from " + DisplayName; } }
 
         public Sprite displayEmblem;
 

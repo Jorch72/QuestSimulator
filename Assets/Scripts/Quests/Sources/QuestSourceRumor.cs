@@ -14,7 +14,7 @@ namespace Rondo.QuestSim.Quests.Sources {
 
         //Display options
         public string DisplayName { get; set; }
-        public string RequestTitle { get { return "A rumor surrounding " + DisplayName; } }
+        public string RequestTitle { get { return "Rumor near " + DisplayName; } }
 
         public int QuestDifficulty { get { return Random.Range(2, 11); } }
 
