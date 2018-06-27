@@ -67,7 +67,7 @@ namespace Rondo.QuestSim.UI.Reputation {
         }
 
         private void OnHeroClick(ReputationHeroInstanceUI instance) {
-            if (m_OnHeroClicked == null) return;
+            if (m_OnHeroClicked == null || !instance.IsAvailable()) return;
             m_OnHeroClicked(instance.Hero);
         }
 

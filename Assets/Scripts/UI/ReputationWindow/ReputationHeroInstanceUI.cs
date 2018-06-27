@@ -101,6 +101,10 @@ namespace Rondo.QuestSim.UI.Reputation {
         public void SetAlpha(float alpha) {
             m_CanvasGroup.alpha = alpha;
         }
+
+        public bool IsAvailable() {
+            return m_CanvasGroup.alpha == 1;
+        }
     }
 
 }
