@@ -28,23 +28,29 @@ namespace Rondo.QuestSim.UI.PostedQuests {
         public Button completeButton;
         public Button postButton;
 
-        [Header("Mode objects")]
+
         [Header("Heroes")]
+        public GameObject heroParentUI;
         public Button heroSelectionInstance;
         public RectTransform heroSelectedInstance;
+        public Color heroSelectIncorrectColor;
+        public Color heroSelectCorrectColor;
 
-        [Header("Item rewards")]
+        [Header("Hero rewards")]
         public TMP_Dropdown heroRewardItemDropdown;
         public GameItemInstanceUI heroRewardItemInstance;
-        public GameItemInstanceUI handlerRewardItemInstance;
-
-        [Header("Gold rewards")]
         public TMP_InputField heroGoldRewardInput;
         public TextMeshProUGUI heroGoldRewardText;
-        public TextMeshProUGUI handlerGoldReward;
 
-        [Header("Additional rewards")]
+        public GameObject heroRewardParent;
+
+        [Header("Handler rewards")]
+        public TextMeshProUGUI handlerGoldReward;
+        public GameItemInstanceUI handlerRewardItemInstance;
         public TextMeshProUGUI handlerAdditionalReward;
+
+        public GameObject handlerItemRewardParent;
+        public GameObject handlerAdditionalRewardParent;
 
         public Action OnWindowClose = delegate { };
 
@@ -131,6 +137,8 @@ namespace Rondo.QuestSim.UI.PostedQuests {
                 } else {
                     heroRewardItemDropdown.GetComponent<GameItemPopupCaller>().associatedItem = null;
                 }
+
+                CheckPostButtonStatus();
             });
 
             heroSelectionInstance.onClick.AddListener(() => {
@@ -222,14 +230,23 @@ namespace Rondo.QuestSim.UI.PostedQuests {
             heroSelectionInstance.gameObject.SetActive(mode == QuestMode.HERO_SELECT);
             heroSelectedInstance.gameObject.SetActive(mode != QuestMode.HERO_SELECT);
 
+            if (mode != QuestMode.SETUP) {
+                heroRewardParent.GetComponent<ImageColorPulsator>().SetColor2(Color.white, true);
+            }
+
             questTitle.text = "<b><u>" + m_CurrentQuest.QuestSource.RequestTitle + "</u>\n<size=18>" + m_CurrentQuest.QuestTypeDisplay + " - </b><i>" + m_CurrentQuest.DurationInDays + " Day" + (m_CurrentQuest.DurationInDays > 1 ? "s" : "") + " duration</i></size>";
             difficultyText.text = ""+ m_CurrentQuest.DifficultyLevel;
             heroGoldRewardText.text = ""+m_CurrentQuest.GoldReward.GoldCount;
             heroRewardItemInstance.SetItem(m_CurrentQuest.ItemReward);
             if(heroGoldRewardInput.gameObject.activeSelf) heroGoldRewardInput.text = "0";
 
+
             handlerGoldReward.text = m_CurrentQuest.HandlerGoldRewardEstimate;
+
+            handlerItemRewardParent.SetActive(m_CurrentQuest.HandlerItemReward != null);
             handlerRewardItemInstance.SetItem(m_CurrentQuest.HandlerItemReward != null ? m_CurrentQuest.HandlerItemReward.Item : (GameItem)null);
+
+            handlerAdditionalRewardParent.SetActive(m_CurrentQuest.AdditionalReward != null);
             handlerAdditionalReward.text = m_CurrentQuest.AdditionalReward != null ? m_CurrentQuest.AdditionalReward.DisplayValue : "-";
 
         }
@@ -243,6 +260,10 @@ namespace Rondo.QuestSim.UI.PostedQuests {
 
             ReputationUI.Instance.SetAvailableHeroes(m_AvailableHeroes, SetSelectedHero);
             successText.text = "-";
+
+            heroParentUI.SetActive(true);
+            heroParentUI.GetComponent<ImageColorPulsator>().SetColor2(heroSelectIncorrectColor, true);
+            acceptButton.interactable = false;
         }
 
         private void SetSelectedHero(HeroInstance hero) {
@@ -250,17 +271,26 @@ namespace Rondo.QuestSim.UI.PostedQuests {
             heroSelectionInstance.GetComponentInChildren<ReputationHeroInstanceUI>(true).ApplyHero(m_SelectedHero);
 
             successText.text = GetSuccessRateForPercentage(m_CurrentQuest.GetHeroSuccessRate(hero));
+            acceptButton.interactable = true;
+
+            heroParentUI.GetComponent<ImageColorPulsator>().SetColor2(heroSelectCorrectColor, false);
         }
 
         private void FindActiveHero() {
             HeroInstance hero = QuestManager.ActiveQuests[m_CurrentQuest];
             heroSelectedInstance.GetComponentInChildren<ReputationHeroInstanceUI>(true).ApplyHero(hero);
             successText.text = GetSuccessRateForPercentage(m_CurrentQuest.GetHeroSuccessRate(hero));
+
+            heroParentUI.SetActive(true);
+
+            heroParentUI.GetComponent<ImageColorPulsator>().SetColor2(Color.white, true);
         }
 
         private void SetNoHero() {
             heroSelectedInstance.GetComponentInChildren<ReputationHeroInstanceUI>(true).ApplyHero(null);
             successText.text = "-";
+
+            heroParentUI.SetActive(false);
         }
 
         private string GetSuccessRateForPercentage(int percentage) {
@@ -302,8 +332,11 @@ namespace Rondo.QuestSim.UI.PostedQuests {
 
         private void CheckPostButtonStatus() {
             bool isPostable = true;
-            if (InventoryManager.Gold < m_CurrentQuest.GoldReward.GoldCount && InventoryManager.Gold >= 0) isPostable = false;
+            if ((InventoryManager.Gold < m_CurrentQuest.GoldReward.GoldCount && InventoryManager.Gold >= 0) ||
+                (m_CurrentQuest.GoldReward.GoldCount == 0 && m_SelectedItemReward == 0)) isPostable = false;
             postButton.interactable = isPostable;
+
+            heroRewardParent.GetComponent<ImageColorPulsator>().SetColor2(isPostable ? heroSelectCorrectColor : heroSelectIncorrectColor);
         }
 
         private void CheckAcceptButtonStatus() {
