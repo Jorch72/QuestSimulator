@@ -317,7 +317,7 @@ namespace Rondo.QuestSim.Utility {
 
         private static WeightedRandom<int> m_HeroNameFirstNameLenghts = new WeightedRandom<int>(
             new int[] { 1, 2, 3, 4 },
-            new int[] { 1, 4, 2, 1 });
+            new int[] { 1, 8, 3, 1 });
         private static WeightedRandom<int> m_HeroNameSurNameLenghts = new WeightedRandom<int>(
             new int[] { 2, 3 },
             new int[] { 3, 1 });
@@ -392,7 +392,31 @@ namespace Rondo.QuestSim.Utility {
                     "sa",
                     "se",
                     "po",
-                    "pa"
+                    "pa",
+                    "mar",
+                    "ia",
+                    "amy",
+                    "eb",
+                    "rie",
+                    "tas",
+                    "dju",
+                    "ra",
+                    "gas",
+                    "coi",
+                    "gne",
+                    "lau",
+                    "ren",
+                    "ce",
+                    "lud",
+                    "wig",
+                    "lo",
+                    "ga",
+                    "mi",
+                    "co",
+                    "lash",
+                    "ame",
+                    "lia",
+                    "lea"
                 };
 
             string[] surNameSyllables = new string[] {

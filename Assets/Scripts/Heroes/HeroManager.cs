@@ -48,6 +48,10 @@ namespace Rondo.QuestSim.Heroes {
             return heroes;
         }
 
+        public static int GetHeroCount() {
+            return m_Heroes.Count;
+        }
+
         public static QuestSourceFaction GetHeroFaction(HeroInstance hero) {
             if (!m_Heroes.ContainsKey(hero)) return null;
             return m_Heroes[hero];

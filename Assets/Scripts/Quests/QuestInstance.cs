@@ -29,10 +29,11 @@ namespace Rondo.QuestSim.Quests {
         public int DaysLeftOnPost { get; set; }
         public int DaysLeftOnQuest { get { return m_DaysLeftOnQuest; } set { m_DaysLeftOnQuest = value; OnDaysLeftUpdate(); } }
         public string HandlerGoldRewardEstimate { get { return Mathf.RoundToInt(HandlerAverageExpectedGoldReward * HANDLER_GOLD_VARIANCE_MIN) + " - " + Mathf.RoundToInt(HandlerAverageExpectedGoldReward * HANDLER_GOLD_VARIANCE_MAX); } }
+        public int AveragePowerLevel { get { return ((DifficultyLevel * HeroInstance.LEVELS_PER_QUEST_STAR + 1) * HeroInstance.BASE_POWER_PER_LEVEL); } }
 
         public Action OnDaysLeftUpdate = delegate { };
 
-        private int AverageExpectedGoldReward { get { return Mathf.RoundToInt((DifficultyLevel + 1) * 20 * (DurationInDays * 0.25f)); } }
+        private int AverageExpectedGoldReward { get { return Mathf.RoundToInt((DifficultyLevel + 1) * 15 * (DurationInDays * 0.25f)); } }
         private float AverageExpectedItemReward { get { return (DifficultyLevel + 1) * 20 * (DurationInDays * 0.5f); } }
         private int ExperiencePoints { get { return (DifficultyLevel + 1) * 5 * DurationInDays; } }
         private int HandlerAverageExpectedGoldReward { get { return Mathf.RoundToInt(AverageExpectedGoldReward * 2 * (HandlerItemReward == null ? 1 : 0.5f)); } }
@@ -56,10 +57,14 @@ namespace Rondo.QuestSim.Quests {
             preferenceValue += (hero.QuestPrefRewardGold / AverageExpectedGoldReward) * (GoldReward.RewardValue);
             preferenceValue += (hero.QuestPrefRewardItem / AverageExpectedItemReward) * (GetTotalItemRewardValue());
 
-            //Difficulty scaler, should be replaced by hero.PowerLevel
             float maxDifficultyDifference = 3;
             float difficultyScaler = (maxDifficultyDifference - Mathf.Abs(hero.QuestPrefDifficulty - DifficultyLevel)) / maxDifficultyDifference;
             preferenceValue *= difficultyScaler;
+
+            float powerLevelScaler = (float)hero.PowerLevel / Mathf.Clamp(AveragePowerLevel, 1, float.MaxValue);
+            preferenceValue *= powerLevelScaler;
+
+            preferenceValue *= hero.QuestTypePreferences[QuestType];
 
             return preferenceValue > 0.7f;
         }
@@ -73,6 +78,8 @@ namespace Rondo.QuestSim.Quests {
 
             float heroPowerDiff = hero.PowerLevel - hero.BasePowerLevel;
             successChance += (heroPowerDiff / hero.Level) * 0.1f;
+
+            successChance *= hero.Class.GetQuestModifier(QuestType);
 
             return Mathf.Clamp(Mathf.RoundToInt(successChance), 0, 100);
         }
@@ -89,23 +96,8 @@ namespace Rondo.QuestSim.Quests {
             if (failChance > successRate) {
                 RefundQuestRewards(true, true);
 
-                /*
-                 * success = 20
-                 * death chance = 80 - 10 = 70
-                 * 
-                 * success = 100
-                 * death chance = 0 - 50 = -50
-                 * 
-                 * success = 0
-                 * death chance = 100 - 0 = 100
-                 * 
-                 * success = 50
-                 * death chance = 50 - 50 = 0
-                 * 
-                 */
-
                 failChance = UnityEngine.Random.Range(0, 101);
-                if (failChance < 100 - successRate) {
+                if (failChance < 100 - successRate + 20) {
                     hero.HeroState = HeroStates.DEAD;
                 } else {
                     hero.HeroState = HeroStates.WOUNDED;

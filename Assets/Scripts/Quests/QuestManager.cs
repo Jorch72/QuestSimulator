@@ -23,7 +23,7 @@ namespace Rondo.QuestSim.Quests {
             ActiveQuests = new Dictionary<QuestInstance, HeroInstance>();
 
             m_QuestAmountChoser = new WeightedRandom<int>(
-                new int[3] { 0, 1, 2 },
+                new int[3] { 1, 2, 3 },
                 new int[3] { 1, 3, 1 });
 
             DayManager.Instance.OnNextDay += NextDay;
@@ -32,9 +32,15 @@ namespace Rondo.QuestSim.Quests {
         }
 
         private static void NextDay() {
-            int questCount = m_QuestAmountChoser.GetRandomValue();
+            int questCount = m_QuestAmountChoser.GetRandomValue() * Mathf.Clamp(HeroManager.GetHeroCount() / 5, 1, 2);
             for (int i = 0; i < questCount; i++) {
-                QuestInstance newQuest = QuestGenerator.GenerateQuestInstance();
+                bool forceFactionQuest = i <= questCount / 3;
+                QuestInstance newQuest;
+                if (forceFactionQuest) {
+                    newQuest = QuestGenerator.GenerateQuestInstance(QuestSourceTypes.FACTION);
+                } else {
+                    newQuest = QuestGenerator.GenerateQuestInstance();
+                }
                 Requests.Add(newQuest);
             }
 

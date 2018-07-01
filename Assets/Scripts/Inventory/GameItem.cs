@@ -19,7 +19,7 @@ namespace Rondo.QuestSim.Inventory {
 
         public GameItem(GameItemRarity rarity, float quality) {
             Rarity = rarity;
-            BaseQuality = quality.Map(0, 1, 0.3f, 0.7f);
+            BaseQuality = quality.Map(0, 1, 0.4f, 0.8f);
         }
     }
 

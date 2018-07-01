@@ -29,7 +29,7 @@ namespace Rondo.QuestSim.Heroes {
                 tempQuestValuesTotal = tempQuestValues[questType];
             }
             foreach (QuestTypes questType in Enum.GetValues(typeof(QuestTypes))) {
-                newHero.QuestTypePreferences[questType] = tempQuestValues[questType] / tempQuestValuesTotal;
+                newHero.QuestTypePreferences[questType] = (tempQuestValues[questType] / tempQuestValuesTotal).Map(0, 1, 0.6f, 1.25f);
             }
 
             float offset = 0.25f;

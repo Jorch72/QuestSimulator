@@ -11,8 +11,8 @@ namespace Rondo.QuestSim.Quests {
 
     public static class QuestGenerator {
 
-        private static WeightedRandom<int> m_QuestSourceChoser = new WeightedRandom<int>(
-            new int[3] { 0, 1, 2 },
+        private static WeightedRandom<QuestSourceTypes> m_QuestSourceChoser = new WeightedRandom<QuestSourceTypes>(
+            new QuestSourceTypes[3] { QuestSourceTypes.RUMOR, QuestSourceTypes.FACTION, QuestSourceTypes.PERSON },
             new int[3] { 1, 2, 1 });
 
         private static WeightedRandom<int> m_QuestSizeChoser = new WeightedRandom<int>(
@@ -23,33 +23,45 @@ namespace Rondo.QuestSim.Quests {
         public static int daysSinceFactionRecruit = Random.Range(25, 35);
 
         public static QuestInstance GenerateQuestInstance() {
+            return GenerateQuestInstance(m_QuestSourceChoser.GetRandomValue());
+        }
+
+        public static QuestInstance GenerateQuestInstance(QuestSourceTypes forcedType) {
             int questObjectiveSize = m_QuestSizeChoser.GetRandomValue();
-            int sourceChoice = m_QuestSourceChoser.GetRandomValue();
             int itemRewardChance;
 
             IQuestReward additionalReward = null;
             IQuestSource qSource;
-            if (sourceChoice == 0) {
-                qSource = ReputationGenerator.GenerateReputationInstance(new QuestSourceRumor());
-                itemRewardChance = 15;
-            } else if (sourceChoice == 1) {
-                qSource = ReputationManager.GetRandomFaction();
-                QuestSourceFaction factionSource = qSource as QuestSourceFaction;
-                itemRewardChance = 25;
 
-                if (Random.Range(0, daysSinceHeroRecruit) == 0) {
-                    additionalReward = new QuestRewardHero(factionSource);
-                    daysSinceHeroRecruit = Random.Range(10, 20);
-                } else if (Random.Range(0, daysSinceFactionRecruit) == 0) {
-                    additionalReward = new QuestRewardFaction(factionSource.AverageHeroLevel + Random.Range(3, 6));
-                    daysSinceFactionRecruit = Random.Range(25, 35);
-                }
+            switch (forcedType) {
+                default:
+                case QuestSourceTypes.FACTION:
+                    qSource = ReputationManager.GetRandomFaction();
+                    QuestSourceFaction factionSource = qSource as QuestSourceFaction;
+                    itemRewardChance = 25;
 
-                daysSinceHeroRecruit--;
-                daysSinceFactionRecruit--;
-            } else {
-                qSource = ReputationGenerator.GenerateReputationInstance(new QuestSourcePerson(EnumUtility.GetRandomEnumValue<ReputationBiases>()));
-                itemRewardChance = 5;
+                    if (Random.Range(0, daysSinceHeroRecruit) == 0) {
+                        additionalReward = new QuestRewardHero(factionSource);
+                        daysSinceHeroRecruit = Random.Range(10, 20);
+                    } else if (Random.Range(0, daysSinceFactionRecruit) == 0) {
+                        additionalReward = new QuestRewardFaction(factionSource.AverageHeroLevel + Random.Range(3, 6));
+                        daysSinceFactionRecruit = Random.Range(25, 35);
+                    }
+
+                    daysSinceHeroRecruit--;
+                    daysSinceFactionRecruit--;
+                    break;
+
+                case QuestSourceTypes.PERSON:
+                    qSource = ReputationGenerator.GenerateReputationInstance(new QuestSourcePerson(EnumUtility.GetRandomEnumValue<ReputationBiases>()));
+                    itemRewardChance = 5;
+                    break;
+
+                case QuestSourceTypes.RUMOR:
+                    qSource = ReputationGenerator.GenerateReputationInstance(new QuestSourceRumor());
+                    itemRewardChance = 15;
+                    break;
+
             }
 
             QuestInstance quest = GenerateQuestInstance(qSource, questObjectiveSize);
@@ -72,7 +84,7 @@ namespace Rondo.QuestSim.Quests {
         }
 
         private static GameItemRarity GetItemRarityForDifficulty(int difficulty) {
-            return (GameItemRarity)(difficulty / 2);
+            return (GameItemRarity)Mathf.RoundToInt(difficulty / 2f);
         }
 
     }

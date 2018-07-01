@@ -69,11 +69,11 @@ namespace Rondo.QuestSim.Quests.Sources {
             }
 
             totalQuestDifficulty /= Heroes.Count;
-            return Mathf.RoundToInt(totalQuestDifficulty);
+            return Mathf.FloorToInt(totalQuestDifficulty);
         }
 
         private int GetQuestDifficulty() {
-            return Mathf.Clamp(GetAverageQuestDifficulty() + Random.Range(-2, 2), 0, 10);
+            return Mathf.Clamp(GetAverageQuestDifficulty() + Random.Range(-1, 1), 0, 10);
         }
     }
 }
