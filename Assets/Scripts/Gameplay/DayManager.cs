@@ -54,7 +54,7 @@ namespace Rondo.QuestSim.Gameplay {
                 QuestInstance nextQuest = m_QuestsToAssign[m_QuestsToAssign.Count - 1];
                 m_QuestsToAssign.Remove(nextQuest);
 
-                QuestDetailsWindow.Instance.OpenWindow(nextQuest, QuestDetailsWindow.QuestMode.HERO_SELECT);
+                QuestDetailsWindow.Instance.OpenWindow(nextQuest, QuestDetailsWindowMode.HERO_SELECT);
                 m_CurrentDayStep++;
                 return;
             }
@@ -66,7 +66,7 @@ namespace Rondo.QuestSim.Gameplay {
                 m_ActiveQuestsToUpdate.Remove(activeQuest);
 
                 if (activeQuest.DaysLeftOnQuest <= 0) {
-                    QuestDetailsWindow.Instance.OpenWindow(activeQuest, QuestDetailsWindow.QuestMode.COMPLETED);
+                    QuestDetailsWindow.Instance.OpenWindow(activeQuest, QuestDetailsWindowMode.COMPLETED);
                     activeQuest.CompleteQuest(QuestManager.ActiveQuests[activeQuest]);
                     m_CurrentDayStep++;
                     return;

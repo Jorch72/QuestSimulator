@@ -33,12 +33,10 @@ namespace Rondo.QuestSim.Heroes {
 
         public static List<HeroInstance> GetAvailableHeroes() {
             List<HeroInstance> heroes = new List<HeroInstance>();
-            List<HeroInstance> activeHeroes = new List<HeroInstance>(QuestManager.ActiveQuests.Values);
+            List<HeroInstance> allHeroes = GetAllHeroes();
 
-            foreach (HeroInstance hero in m_Heroes.Keys) {
-                if (hero.HeroState == HeroStates.DEAD ||
-                    hero.HeroState == HeroStates.WOUNDED ||
-                    activeHeroes.Contains(hero)) {
+            foreach (HeroInstance hero in allHeroes) {
+                if (hero.HeroState != HeroStates.IDLE) {
                     continue;
                 }
 
@@ -57,13 +55,28 @@ namespace Rondo.QuestSim.Heroes {
             return m_Heroes[hero];
         }
 
-        public static void SetHeroToIdle(HeroInstance hero, bool force = false) {
-            if ((hero.HeroState == HeroStates.DEAD ||
-                hero.HeroState == HeroStates.WOUNDED) &&
-                !force) {
+        public static void SetHeroToState(HeroInstance hero, HeroStates state, bool force = false) {
+            if (force) {
+                hero.HeroState = state;
                 return;
             }
-            hero.HeroState = HeroStates.IDLE;
+
+            switch (state) {
+                case HeroStates.IDLE:
+                case HeroStates.ON_QUEST:
+                    if (hero.HeroState == HeroStates.DEAD ||
+                        hero.HeroState == HeroStates.WOUNDED) {
+                        return;
+                    }
+                    hero.HeroState = state;
+                    break;
+
+                case HeroStates.WOUNDED:
+                case HeroStates.DEAD:
+                case HeroStates.UNDISCOVERED:
+                    hero.HeroState = state;
+                    break;
+            }
         }
 
         public static void UpdateWoundedHeroes() {

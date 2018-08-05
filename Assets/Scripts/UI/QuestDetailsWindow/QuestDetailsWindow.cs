@@ -1,4 +1,5 @@
 ﻿using Rondo.Generic.Utility;
+using Rondo.Generic.Utility.UI;
 using Rondo.QuestSim.Heroes;
 using Rondo.QuestSim.Inventory;
 using Rondo.QuestSim.Quests;
@@ -27,22 +28,7 @@ namespace Rondo.QuestSim.UI.PostedQuests {
         public Button acceptButton;
         public Button completeButton;
         public Button postButton;
-
-
-        [Header("Heroes")]
-        public GameObject heroParentUI;
-        public Button heroSelectionInstance;
-        public RectTransform heroSelectedInstance;
-        public Color heroSelectIncorrectColor;
-        public Color heroSelectCorrectColor;
-
-        [Header("Hero rewards")]
-        public TMP_Dropdown heroRewardItemDropdown;
-        public GameItemInstanceUI heroRewardItemInstance;
-        public TMP_InputField heroGoldRewardInput;
-        public TextMeshProUGUI heroGoldRewardText;
-
-        public GameObject heroRewardParent;
+        public QuestDetailsHero heroSectionTemplate;
 
         [Header("Handler rewards")]
         public TextMeshProUGUI handlerGoldReward;
@@ -54,15 +40,49 @@ namespace Rondo.QuestSim.UI.PostedQuests {
 
         public Action OnWindowClose = delegate { };
 
-        private QuestInstance m_CurrentQuest;
-        private List<HeroInstance> m_AvailableHeroes = new List<HeroInstance>();
-        private QuestMode m_WindowMode = QuestMode.ACTIVE_REVIEW;
-        private List<GameObject> m_ItemsToDelete = new List<GameObject>();
-        private HeroInstance m_SelectedHero = null;
-        private int m_SelectedItemReward = 0;
+        public QuestInstance CurrentQuest { get; set; }
+        public QuestDetailsWindowMode WindowMode { get; set; }
+        public HeroInstance[] SelectedHeroes { get; set; }
+        public int[] SelectedGoldRewards { get; set; }
+        public GameItem[] SelectedItemRewards { get; set; }
+
+        public bool[] PostButtonStatuses { get; set; }
+        public bool[] AcceptButtonStatuses { get; set; }
+
+        public HeroInstance[] TempSelectedHeroes { get; set; }
+
+        private QuestDetailsHero[] m_HeroSections;
 
         void Awake() {
             Instance = this;
+
+            m_HeroSections = new QuestDetailsHero[QuestInstance.MAX_HEROES_PER_QUEST];
+            m_HeroSections[0] = heroSectionTemplate;
+            for (int i = 1; i < QuestInstance.MAX_HEROES_PER_QUEST; i++) {
+                QuestDetailsHero newInstance = Instantiate(heroSectionTemplate);
+                newInstance.transform.SetParent(heroSectionTemplate.transform.parent, false);
+                newInstance.transform.SetSiblingIndex(1 + i);
+
+                m_HeroSections[i] = newInstance;
+            }
+
+            for(int i = 0; i < m_HeroSections.Length; i++) {
+                QuestDetailsHero heroSection = m_HeroSections[i];
+                heroSection.Initialize(i);
+            }
+
+            SelectedHeroes = new HeroInstance[QuestInstance.MAX_HEROES_PER_QUEST];
+            PostButtonStatuses = new bool[QuestInstance.MAX_HEROES_PER_QUEST];
+            AcceptButtonStatuses = new bool[QuestInstance.MAX_HEROES_PER_QUEST];
+            SelectedGoldRewards = new int[QuestInstance.MAX_HEROES_PER_QUEST];
+            SelectedItemRewards = new GameItem[QuestInstance.MAX_HEROES_PER_QUEST];
+            TempSelectedHeroes = new HeroInstance[QuestInstance.MAX_HEROES_PER_QUEST];
+
+            for (int i = 0; i < SelectedGoldRewards.Length; i++) {
+                SelectedGoldRewards[i] = 0;
+            }
+
+            WindowMode = QuestDetailsWindowMode.ACTIVE_REVIEW;
         }
 
         void Start() {
@@ -75,74 +95,57 @@ namespace Rondo.QuestSim.UI.PostedQuests {
             });
 
             cancelButton.onClick.AddListener(() => {
-                m_CurrentQuest.RefundQuestRewards(true, true);
-                QuestManager.PostedQuests.Remove(m_CurrentQuest);
-                QuestManager.Requests.Add(m_CurrentQuest);
+                CurrentQuest.RefundQuestRewards(true, true);
+                QuestManager.PostedQuests.Remove(CurrentQuest);
+                QuestManager.Requests.Add(CurrentQuest);
                 QuestsWindow.Instance.Reload();
                 CloseWindow();
             });
 
             acceptButton.onClick.AddListener(() => {
-                m_SelectedHero.HeroState = HeroStates.ON_QUEST;
+                foreach(HeroInstance hero in SelectedHeroes) {
+                    if (hero == null) continue;
+                    HeroManager.SetHeroToState(hero, HeroStates.ON_QUEST);
+                }
 
-                QuestManager.PostedQuests.Remove(m_CurrentQuest);
-                QuestManager.ActiveQuests.Add(m_CurrentQuest, m_SelectedHero);
+                QuestManager.PostedQuests.Remove(CurrentQuest);
+                QuestManager.ActiveQuests.Add(CurrentQuest, SelectedHeroes.Clone() as HeroInstance[]);
                 QuestsWindow.Instance.Reload();
                 CloseWindow();
             });
 
             completeButton.onClick.AddListener(() => {
-                HeroManager.SetHeroToIdle(QuestManager.ActiveQuests[m_CurrentQuest]);
-                QuestManager.ActiveQuests.Remove(m_CurrentQuest);
+                foreach (HeroInstance hero in QuestManager.ActiveQuests[CurrentQuest]) {
+                    if (hero == null) continue;
+                    HeroManager.SetHeroToState(hero, HeroStates.IDLE);
+                }
+
+                QuestManager.ActiveQuests.Remove(CurrentQuest);
                 QuestsWindow.Instance.Reload();
                 CloseWindow();
             });
 
             postButton.onClick.AddListener(() => {
-                QuestManager.Requests.Remove(m_CurrentQuest);
-                QuestManager.PostedQuests.Add(m_CurrentQuest);
+                QuestManager.Requests.Remove(CurrentQuest);
+                QuestManager.PostedQuests.Add(CurrentQuest);
                 QuestsWindow.Instance.Reload();
 
-                InventoryManager.Gold -= m_CurrentQuest.GoldReward.GoldCount;
-                if (m_SelectedItemReward != 0) {
-                    GameItem item = InventoryManager.OwnedItems[m_SelectedItemReward - 1];
-                    m_CurrentQuest.ItemReward = new QuestRewardItem(item);
+                for (int i = 0; i < SelectedGoldRewards.Length; i++) {
+                    CurrentQuest.GoldRewards[i] = new QuestRewardGold();
+                    CurrentQuest.GoldRewards[i].GoldCount = SelectedGoldRewards[i];
+                }
+
+                for (int i = 0; i < SelectedItemRewards.Length; i++) {
+                    GameItem item = SelectedItemRewards[i];
+                    if (item == null) continue;
+
+                    CurrentQuest.ItemRewards[i] = new QuestRewardItem(item);
                     InventoryManager.MoveItemToReserved(item);
                 }
 
+                InventoryManager.Gold -= CurrentQuest.GetTotalGoldCount();
+
                 CloseWindow();
-            });
-
-            heroGoldRewardInput.onValueChanged.AddListener((value) => {
-                if (string.IsNullOrEmpty(value)) {
-                    value = "0";
-                }
-                int goldValue = int.Parse(value);
-                m_CurrentQuest.GoldReward.GoldCount = goldValue;
-
-                CheckPostButtonStatus();
-            });
-
-            heroGoldRewardInput.onDeselect.AddListener((value) => {
-                if (string.IsNullOrEmpty(value)) {
-                    heroGoldRewardInput.text = "0";
-                }
-            });
-
-            heroRewardItemDropdown.onValueChanged.AddListener((value) => {
-                m_SelectedItemReward = value;
-
-                if (m_SelectedItemReward != 0) {
-                    heroRewardItemDropdown.GetComponent<GameItemPopupCaller>().associatedItem = InventoryManager.OwnedItems[m_SelectedItemReward - 1];
-                } else {
-                    heroRewardItemDropdown.GetComponent<GameItemPopupCaller>().associatedItem = null;
-                }
-
-                CheckPostButtonStatus();
-            });
-
-            heroSelectionInstance.onClick.AddListener(() => {
-                ReputationUI.Instance.gameObject.SetActive(true);
             });
 
             Instance = this;
@@ -150,25 +153,25 @@ namespace Rondo.QuestSim.UI.PostedQuests {
         }
 
         private void CloseWindow() {
-            m_CurrentQuest = null;
+            CurrentQuest = null;
 
             gameObject.SetActive(false);
             ReputationUI.Instance.ResetAvailableHeroes();
             OnWindowClose();
         }
 
-        public void OpenWindow(QuestInstance quest, QuestMode mode) {
-            m_WindowMode = mode;
-            Reset();
-            if (quest == m_CurrentQuest) {
+        public void OpenWindow(QuestInstance quest, QuestDetailsWindowMode mode) {
+            WindowMode = mode;
+            if (quest == CurrentQuest) {
                 gameObject.SetActive(!gameObject.activeSelf);
             } else {
                 gameObject.SetActive(true);
             }
-            m_CurrentQuest = quest;
+            CurrentQuest = quest;
+            Reset();
 
             switch (mode) {
-                case QuestMode.SETUP:
+                case QuestDetailsWindowMode.SETUP:
                     closeButton.gameObject.SetActive(true);
                     skipButton.gameObject.SetActive(false);
                     cancelButton.gameObject.SetActive(false);
@@ -178,18 +181,19 @@ namespace Rondo.QuestSim.UI.PostedQuests {
 
                     RefreshItemRewardDropdown();
                     SetNoHero();
+                    CheckPostButtonStatus();
                     break;
-                case QuestMode.HERO_SELECT:
+
+                case QuestDetailsWindowMode.HERO_SELECT:
                     closeButton.gameObject.SetActive(false);
                     skipButton.gameObject.SetActive(true);
                     cancelButton.gameObject.SetActive(true);
                     acceptButton.gameObject.SetActive(true);
                     completeButton.gameObject.SetActive(false);
                     postButton.gameObject.SetActive(false);
-
-                    FindPotentialHeroes();
                     break;
-                case QuestMode.POSTED_REVIEW:
+
+                case QuestDetailsWindowMode.POSTED_REVIEW:
                     closeButton.gameObject.SetActive(true);
                     skipButton.gameObject.SetActive(false);
                     cancelButton.gameObject.SetActive(true);
@@ -199,7 +203,7 @@ namespace Rondo.QuestSim.UI.PostedQuests {
 
                     SetNoHero();
                     break;
-                case QuestMode.ACTIVE_REVIEW:
+                case QuestDetailsWindowMode.ACTIVE_REVIEW:
                     closeButton.gameObject.SetActive(true);
                     skipButton.gameObject.SetActive(false);
                     cancelButton.gameObject.SetActive(true);
@@ -209,7 +213,7 @@ namespace Rondo.QuestSim.UI.PostedQuests {
 
                     FindActiveHero();
                     break;
-                case QuestMode.COMPLETED:
+                case QuestDetailsWindowMode.COMPLETED:
                     closeButton.gameObject.SetActive(false);
                     skipButton.gameObject.SetActive(false);
                     cancelButton.gameObject.SetActive(false);
@@ -221,76 +225,45 @@ namespace Rondo.QuestSim.UI.PostedQuests {
                     break;
             }
 
-            heroRewardItemDropdown.gameObject.SetActive(mode == QuestMode.SETUP);
-            heroRewardItemInstance.gameObject.SetActive(mode != QuestMode.SETUP);
+            questTitle.text = "<b><u>" + CurrentQuest.QuestSource.RequestTitle + "</u>\n<size=18>" + CurrentQuest.QuestTypeDisplay + " - </b><i>" + CurrentQuest.DurationInDays + " Day" + (CurrentQuest.DurationInDays > 1 ? "s" : "") + " duration</i></size>";
+            difficultyText.text = ""+ CurrentQuest.DifficultyLevel;
 
-            heroGoldRewardInput.gameObject.SetActive(mode == QuestMode.SETUP);
-            heroGoldRewardText.gameObject.SetActive(mode != QuestMode.SETUP);
+            handlerGoldReward.text = CurrentQuest.HandlerGoldRewardEstimate;
 
-            heroSelectionInstance.gameObject.SetActive(mode == QuestMode.HERO_SELECT);
-            heroSelectedInstance.gameObject.SetActive(mode != QuestMode.HERO_SELECT);
+            handlerItemRewardParent.SetActive(CurrentQuest.HandlerItemReward != null);
+            handlerRewardItemInstance.SetItem(CurrentQuest.HandlerItemReward != null ? CurrentQuest.HandlerItemReward.Item : (GameItem)null);
 
-            if (mode != QuestMode.SETUP) {
-                heroRewardParent.GetComponent<ImageColorPulsator>().SetColor2(Color.white, true);
+            handlerAdditionalRewardParent.SetActive(CurrentQuest.AdditionalReward != null);
+            handlerAdditionalReward.text = CurrentQuest.AdditionalReward != null ? CurrentQuest.AdditionalReward.DisplayValue : "-";
+
+            foreach(QuestDetailsHero heroSection in m_HeroSections) {
+                heroSection.Reload();
             }
-
-            questTitle.text = "<b><u>" + m_CurrentQuest.QuestSource.RequestTitle + "</u>\n<size=18>" + m_CurrentQuest.QuestTypeDisplay + " - </b><i>" + m_CurrentQuest.DurationInDays + " Day" + (m_CurrentQuest.DurationInDays > 1 ? "s" : "") + " duration</i></size>";
-            difficultyText.text = ""+ m_CurrentQuest.DifficultyLevel;
-            heroGoldRewardText.text = ""+m_CurrentQuest.GoldReward.GoldCount;
-            heroRewardItemInstance.SetItem(m_CurrentQuest.ItemReward);
-            if(heroGoldRewardInput.gameObject.activeSelf) heroGoldRewardInput.text = "0";
-
-
-            handlerGoldReward.text = m_CurrentQuest.HandlerGoldRewardEstimate;
-
-            handlerItemRewardParent.SetActive(m_CurrentQuest.HandlerItemReward != null);
-            handlerRewardItemInstance.SetItem(m_CurrentQuest.HandlerItemReward != null ? m_CurrentQuest.HandlerItemReward.Item : (GameItem)null);
-
-            handlerAdditionalRewardParent.SetActive(m_CurrentQuest.AdditionalReward != null);
-            handlerAdditionalReward.text = m_CurrentQuest.AdditionalReward != null ? m_CurrentQuest.AdditionalReward.DisplayValue : "-";
-
-        }
-
-        private void FindPotentialHeroes() {
-            foreach (HeroInstance hero in HeroManager.GetAvailableHeroes()) {
-                if (m_CurrentQuest.WouldHeroAccept(hero)) {
-                    m_AvailableHeroes.Add(hero);
-                }
-            }
-
-            ReputationUI.Instance.SetAvailableHeroes(m_AvailableHeroes, SetSelectedHero);
-            successText.text = "-";
-
-            heroParentUI.SetActive(true);
-            heroParentUI.GetComponent<ImageColorPulsator>().SetColor2(heroSelectIncorrectColor, true);
-            acceptButton.interactable = false;
-        }
-
-        private void SetSelectedHero(HeroInstance hero) {
-            m_SelectedHero = hero;
-            heroSelectionInstance.GetComponentInChildren<ReputationHeroInstanceUI>(true).ApplyHero(m_SelectedHero);
-
-            successText.text = GetSuccessRateForPercentage(m_CurrentQuest.GetHeroSuccessRate(hero));
-            acceptButton.interactable = true;
-
-            heroParentUI.GetComponent<ImageColorPulsator>().SetColor2(heroSelectCorrectColor, false);
         }
 
         private void FindActiveHero() {
-            HeroInstance hero = QuestManager.ActiveQuests[m_CurrentQuest];
-            heroSelectedInstance.GetComponentInChildren<ReputationHeroInstanceUI>(true).ApplyHero(hero);
-            successText.text = GetSuccessRateForPercentage(m_CurrentQuest.GetHeroSuccessRate(hero));
-
-            heroParentUI.SetActive(true);
-
-            heroParentUI.GetComponent<ImageColorPulsator>().SetColor2(Color.white, true);
+            foreach (QuestDetailsHero heroSection in m_HeroSections) {
+                heroSection.FindActiveHero();
+            }
         }
 
         private void SetNoHero() {
-            heroSelectedInstance.GetComponentInChildren<ReputationHeroInstanceUI>(true).ApplyHero(null);
-            successText.text = "-";
+            foreach (QuestDetailsHero heroSection in m_HeroSections) {
+                heroSection.SetNoHero();
+            }
+        }
 
-            heroParentUI.SetActive(false);
+        public void SetSelectedHero(HeroInstance hero, int heroNumber) {
+            SelectedHeroes[heroNumber] = hero;
+
+            successText.text = GetSuccessRateForPercentage(CurrentQuest.GetTotalSuccessRate(SelectedHeroes));
+        }
+
+        public bool HasHeroSelected(HeroInstance hero) {
+            foreach(HeroInstance h in SelectedHeroes) {
+                if (h != null && h == hero) return true;
+            }
+            return false;
         }
 
         private string GetSuccessRateForPercentage(int percentage) {
@@ -310,61 +283,70 @@ namespace Rondo.QuestSim.UI.PostedQuests {
 
         private void RefreshItemRewardDropdown() {
             List<string> itemRewardNames = new List<string>() { "-" };
-            foreach(GameItem item in InventoryManager.OwnedItems) {
+            foreach (GameItem item in InventoryManager.OwnedItems) {
                 itemRewardNames.Add(item.DisplayName);
             }
-
-            heroRewardItemDropdown.ClearOptions();
-            heroRewardItemDropdown.AddOptions(itemRewardNames);
-            heroRewardItemDropdown.value = 0;
-            heroRewardItemDropdown.RefreshShownValue();
-
-            heroRewardItemDropdown.GetComponent<GameItemPopupCaller>().associatedItem = null;
         }
 
-        public void SetItemInstancesOnDropdown() {
-            GameItemPopupCaller[] itemInstances = heroRewardItemDropdown.GetComponentsInChildren<GameItemPopupCaller>();
-            for (int i = 0; i < itemInstances.Length; i++) {
-                if (i == 0 || i == 1) continue;
-                itemInstances[i].associatedItem = (InventoryManager.OwnedItems[i - 2]);
-            }
-        }
-
-        private void CheckPostButtonStatus() {
+        public void CheckPostButtonStatus() {
             bool isPostable = true;
-            if ((InventoryManager.Gold < m_CurrentQuest.GoldReward.GoldCount && InventoryManager.Gold >= 0) ||
-                (m_CurrentQuest.GoldReward.GoldCount == 0 && m_SelectedItemReward == 0)) isPostable = false;
-            postButton.interactable = isPostable;
 
-            heroRewardParent.GetComponent<ImageColorPulsator>().SetColor2(isPostable ? heroSelectCorrectColor : heroSelectIncorrectColor);
+            for (int i = 0; i < CurrentQuest.PartySize; i++) {
+                bool postStatus = PostButtonStatuses[i];
+                if (postStatus == false) {
+                    isPostable = false;
+                    break;
+                }
+            }
+
+            postButton.interactable = isPostable;
         }
 
         private void CheckAcceptButtonStatus() {
             bool isAcceptable = true;
-            if (m_SelectedHero == null) isAcceptable = false;
+            
+            foreach(bool acceptStatus in AcceptButtonStatuses) {
+                if(acceptStatus == false) {
+                    isAcceptable = false;
+                    break;
+                }
+            }
+
             acceptButton.interactable = isAcceptable;
         }
 
         public void Reset() {
-            m_AvailableHeroes.Clear();
-
-            foreach(GameObject obj in m_ItemsToDelete) {
-                Destroy(obj);
+            for(int i = 0; i < PostButtonStatuses.Length; i++) {
+                PostButtonStatuses[i] = true;
             }
-            m_ItemsToDelete.Clear();
 
-            m_SelectedHero = null;
-            m_SelectedItemReward = 0;
+            for (int i = 0; i < AcceptButtonStatuses.Length; i++) {
+                AcceptButtonStatuses[i] = true;
+            }
 
-            heroSelectionInstance.GetComponentInChildren<ReputationHeroInstanceUI>(true).ApplyHero(null);
-        }
+            for (int i = 0; i < SelectedHeroes.Length; i++) {
+                SelectedHeroes[i] = null;
+            }
 
-        public enum QuestMode {
-            SETUP,
-            HERO_SELECT,
-            POSTED_REVIEW,
-            ACTIVE_REVIEW,
-            COMPLETED
+            for (int i = 0; i < TempSelectedHeroes.Length; i++) {
+                TempSelectedHeroes[i] = null;
+            }
+
+            for (int i = 0; i < SelectedItemRewards.Length; i++) {
+                SelectedItemRewards[i] = null;
+            }
+
+            for (int i = 0; i < SelectedGoldRewards.Length; i++) {
+                SelectedGoldRewards[i] = 0;
+            }
+
+            for(int i = 0; i < m_HeroSections.Length; i++) {
+                m_HeroSections[i].gameObject.SetActive(i <= CurrentQuest.PartySize - 1);
+                m_HeroSections[i].SetNoHero();
+            }
+
+            ReputationUI.Instance.ResetAvailableHeroes();
+            UIHighlighter.Instance.RemoveAll();
         }
 
     }

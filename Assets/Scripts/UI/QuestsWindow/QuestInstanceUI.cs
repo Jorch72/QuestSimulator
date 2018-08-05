@@ -16,7 +16,7 @@ namespace Rondo.QuestSim.UI.ActiveQuests {
 
         private Button m_Button;
         private QuestInstance m_QuestInstance;
-        private QuestDetailsWindow.QuestMode m_QuestMode;
+        private QuestDetailsWindowMode m_QuestMode;
 
         void Awake() {
             m_Button = GetComponent<Button>();
@@ -38,11 +38,11 @@ namespace Rondo.QuestSim.UI.ActiveQuests {
             m_QuestInstance = chain;
 
             if (QuestManager.PostedQuests.Contains(m_QuestInstance)) {
-                m_QuestMode = QuestDetailsWindow.QuestMode.POSTED_REVIEW;
+                m_QuestMode = QuestDetailsWindowMode.POSTED_REVIEW;
             } else if (QuestManager.Requests.Contains(m_QuestInstance)) {
-                m_QuestMode = QuestDetailsWindow.QuestMode.SETUP;
+                m_QuestMode = QuestDetailsWindowMode.SETUP;
             } else {
-                m_QuestMode = QuestDetailsWindow.QuestMode.ACTIVE_REVIEW;
+                m_QuestMode = QuestDetailsWindowMode.ACTIVE_REVIEW;
             }
 
             m_QuestInstance.OnDaysLeftUpdate += UpdateText;
@@ -54,12 +54,12 @@ namespace Rondo.QuestSim.UI.ActiveQuests {
             string titleText = "<b>" + m_QuestInstance.QuestSource.RequestTitle + "</b>\n<i>";
 
             switch (m_QuestMode) {
-                case QuestDetailsWindow.QuestMode.SETUP:
-                case QuestDetailsWindow.QuestMode.POSTED_REVIEW:
+                case QuestDetailsWindowMode.SETUP:
+                case QuestDetailsWindowMode.POSTED_REVIEW:
                     int expiresInDays = m_QuestInstance.DaysLeftOnPost;
                     titleText += "Expires in " + expiresInDays + " day" + (expiresInDays > 1 ? "s" : "");
                     break;
-                case QuestDetailsWindow.QuestMode.ACTIVE_REVIEW:
+                case QuestDetailsWindowMode.ACTIVE_REVIEW:
                     int daysLeft = m_QuestInstance.DaysLeftOnQuest;
                     titleText += daysLeft + " day" + (daysLeft > 1 ? "s" : "") + " left until completed";
                     break;

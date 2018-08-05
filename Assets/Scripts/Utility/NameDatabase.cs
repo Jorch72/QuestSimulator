@@ -16,7 +16,6 @@ namespace Rondo.QuestSim.Utility {
                 "Frost",
                 "Onyx",
                 "Ender",
-                "Cunning",
                 "Earth",
                 "Bronze",
                 "Wind",
@@ -33,14 +32,12 @@ namespace Rondo.QuestSim.Utility {
                 "Moon",
                 "Bright",
                 "Curse",
-                "Fallen",
                 "Dark",
                 "Red",
                 "Char",
                 "Night",
                 "Chaos",
                 "Hollow",
-                "Shatter",
                 "Doom"
             };
 
@@ -83,7 +80,8 @@ namespace Rondo.QuestSim.Utility {
                 "blood",
                 "dagger",
                 "mark",
-                "breaker"
+                "breaker",
+                "shatter"
             };
 
             return partOne[Random.Range(0, partOne.Length)] + partTwo[Random.Range(0, partTwo.Length)];
@@ -251,7 +249,7 @@ namespace Rondo.QuestSim.Utility {
                     "Order",
                     "Roar",
                     "Dirge",
-                    "Resurgance",
+                    "Resurgence",
                     "Men",
                     "Tempest",
                     "Refugees",

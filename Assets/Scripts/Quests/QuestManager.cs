@@ -13,14 +13,14 @@ namespace Rondo.QuestSim.Quests {
 
         public static List<QuestInstance> Requests { get; set; }
         public static List<QuestInstance> PostedQuests { get; set; }
-        public static Dictionary<QuestInstance, HeroInstance> ActiveQuests { get; set; }
+        public static Dictionary<QuestInstance, HeroInstance[]> ActiveQuests { get; set; }
 
         private static WeightedRandom<int> m_QuestAmountChoser;
 
         public static void Initialize() {
             Requests = new List<QuestInstance>();
             PostedQuests = new List<QuestInstance>();
-            ActiveQuests = new Dictionary<QuestInstance, HeroInstance>();
+            ActiveQuests = new Dictionary<QuestInstance, HeroInstance[]>();
 
             m_QuestAmountChoser = new WeightedRandom<int>(
                 new int[3] { 1, 2, 3 },

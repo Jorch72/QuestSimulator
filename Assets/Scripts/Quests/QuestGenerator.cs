@@ -19,6 +19,10 @@ namespace Rondo.QuestSim.Quests {
             new int[5] { 1, 2, 3, 4, 5 },
             new int[5] { 5, 3, 3, 2, 1 });
 
+        private static WeightedRandom<int> m_PartySizeChoser = new WeightedRandom<int>(
+            new int[3] { 1, 2, 3 },
+            new int[3] { 20, 8, 2 });
+
         public static int daysSinceHeroRecruit = Random.Range(10, 20);
         public static int daysSinceFactionRecruit = Random.Range(25, 35);
 
@@ -66,6 +70,7 @@ namespace Rondo.QuestSim.Quests {
 
             QuestInstance quest = GenerateQuestInstance(qSource, questObjectiveSize);
             quest.AdditionalReward = additionalReward;
+            quest.PartySize = m_PartySizeChoser.GetRandomValue();
 
             if (Random.Range(0, itemRewardChance) == 0) {
                 GameItem itemReward = GameItemGenerator.GenerateItem(GetItemRarityForDifficulty(quest.DifficultyLevel));

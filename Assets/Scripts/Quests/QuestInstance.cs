@@ -13,17 +13,19 @@ namespace Rondo.QuestSim.Quests {
 
     public class QuestInstance {
 
+        public static int MAX_HEROES_PER_QUEST = 3;
         private static float HANDLER_GOLD_VARIANCE_MIN = 0.8f;
         private static float HANDLER_GOLD_VARIANCE_MAX = 1.2f;
 
         public string DisplayName { get; set; }
+        public int PartySize { get; set; }
         public int DurationInDays { get { return m_DurationInDays; } set { m_DurationInDays = value; DaysLeftOnQuest = value; } }
         public IQuestSource QuestSource { get; private set; }
         public QuestTypes QuestType { get; set; }
         public string QuestTypeDisplay { get { return QuestType.ToString().Replace('_', ' '); } }
         public int DifficultyLevel { get; set; }
-        public QuestRewardGold GoldReward { get; set; }
-        public QuestRewardItem ItemReward { get; set; }
+        public QuestRewardGold[] GoldRewards { get; set; }
+        public QuestRewardItem[] ItemRewards { get; set; }
         public IQuestReward AdditionalReward { get; set; }
         public QuestRewardItem HandlerItemReward { get; set; }
         public int DaysLeftOnPost { get; set; }
@@ -36,26 +38,33 @@ namespace Rondo.QuestSim.Quests {
         private int AverageExpectedGoldReward { get { return Mathf.RoundToInt((DifficultyLevel + 1) * 15 * (DurationInDays * 0.25f)); } }
         private float AverageExpectedItemReward { get { return (DifficultyLevel + 1) * 20 * (DurationInDays * 0.5f); } }
         private int ExperiencePoints { get { return (DifficultyLevel + 1) * 5 * DurationInDays; } }
-        private int HandlerAverageExpectedGoldReward { get { return Mathf.RoundToInt(AverageExpectedGoldReward * 2 * (HandlerItemReward == null ? 1 : 0.5f)); } }
+        private int HandlerAverageExpectedGoldReward { get { return Mathf.RoundToInt(AverageExpectedGoldReward * 2 * (HandlerItemReward == null ? 1 : 0.5f)) * PartySize; } }
 
         private int m_DurationInDays;
         private int m_DaysLeftOnQuest;
 
         public QuestInstance(IQuestSource source) {
             QuestSource = source;
-            GoldReward = new QuestRewardGold();
+            ItemRewards = new QuestRewardItem[MAX_HEROES_PER_QUEST];
+            GoldRewards = new QuestRewardGold[MAX_HEROES_PER_QUEST];
+
+            for (int i = 0; i < GoldRewards.Length; i++) {
+                GoldRewards[i] = new QuestRewardGold();
+            }
+
             DaysLeftOnPost = 5;
 
             DisplayName = "Quest name";
         }
 
-        public bool WouldHeroAccept(HeroInstance hero) {
-            if (hero.HeroState == HeroStates.WOUNDED || hero.HeroState == HeroStates.DEAD) return false;
+        public bool WouldHeroAccept(HeroInstance hero, int heroNumber) {
+            Debug.Log("Hero state on " + hero.DisplayName + " is " + hero.HeroState.ToString());
+            if (hero.HeroState != HeroStates.IDLE) return false;
 
             float preferenceValue = 0;
 
-            preferenceValue += (hero.QuestPrefRewardGold / AverageExpectedGoldReward) * (GoldReward.RewardValue);
-            preferenceValue += (hero.QuestPrefRewardItem / AverageExpectedItemReward) * (GetTotalItemRewardValue());
+            preferenceValue += (hero.QuestPrefRewardGold / AverageExpectedGoldReward) * (GoldRewards[heroNumber].RewardValue);
+            preferenceValue += (hero.QuestPrefRewardItem / AverageExpectedItemReward) * (GetTotalItemRewardValue(heroNumber));
 
             float maxDifficultyDifference = 3;
             float difficultyScaler = (maxDifficultyDifference - Mathf.Abs(hero.QuestPrefDifficulty - DifficultyLevel)) / maxDifficultyDifference;
@@ -67,6 +76,18 @@ namespace Rondo.QuestSim.Quests {
             preferenceValue *= hero.QuestTypePreferences[QuestType];
 
             return preferenceValue > 0.7f;
+        }
+
+        public int GetTotalSuccessRate(HeroInstance[] heroes) {
+            int count = 0;
+            int rate = 0;
+            foreach (HeroInstance hero in heroes) {
+                if (hero == null) continue;
+                int value = GetHeroSuccessRate(hero) / PartySize;
+                rate += value;
+                count++;
+            }
+            return rate;
         }
 
         public int GetHeroSuccessRate(HeroInstance hero) {
@@ -84,36 +105,42 @@ namespace Rondo.QuestSim.Quests {
             return Mathf.Clamp(Mathf.RoundToInt(successChance), 0, 100);
         }
 
-        private float GetTotalItemRewardValue() {
-            return ItemReward != null ? ItemReward.RewardValue : 0;
+        private float GetTotalItemRewardValue(int heroNumber) {
+            return ItemRewards[heroNumber] != null ? ItemRewards[heroNumber].RewardValue : 0;
         }
 
-        public bool CompleteQuest(HeroInstance hero) {
+        public bool CompleteQuest(HeroInstance[] heros) {
 
             //Check if the hero completed it or not
-            int successRate = GetHeroSuccessRate(hero);
-            int failChance = UnityEngine.Random.Range(0, 101);
-            if (failChance > successRate) {
-                RefundQuestRewards(true, true);
+            int successRate = GetTotalSuccessRate(heros);
 
-                failChance = UnityEngine.Random.Range(0, 101);
-                if (failChance < 100 - successRate + 20) {
-                    hero.HeroState = HeroStates.DEAD;
-                } else {
-                    hero.HeroState = HeroStates.WOUNDED;
-                    hero.WoundedDays = ((100 - successRate) / 10) + 4;
+            for(int i = 0; i < heros.Length; i++) {
+                HeroInstance hero = heros[i];
+                if (hero == null) continue;
+
+                int failChance = UnityEngine.Random.Range(0, 101);
+                if (failChance > successRate) {
+                    RefundQuestRewards(true, true);
+
+                    failChance = UnityEngine.Random.Range(0, 101);
+                    if (failChance < 100 - successRate + 20) {
+                        hero.HeroState = HeroStates.DEAD;
+                    } else {
+                        hero.HeroState = HeroStates.WOUNDED;
+                        hero.WoundedDays = ((100 - successRate) / 10) + 4;
+                    }
+                    return false;
                 }
-                return false;
+
+                if (ItemRewards[i] != null) ItemRewards[i].ApplyReward(hero);
+                if (AdditionalReward != null && i == 0) AdditionalReward.ApplyReward(hero);
+
+                hero.Experience += ExperiencePoints;
+                HeroManager.SetHeroToState(hero, HeroStates.IDLE);
+
+                QuestSourceFaction faction = HeroManager.GetHeroFaction(hero);
+                ReputationManager.GetReputationTracker(faction).ModifyReputation(ExperiencePoints * 0.1f);
             }
-
-            if (ItemReward != null) ItemReward.ApplyReward(hero);
-            if (AdditionalReward != null) AdditionalReward.ApplyReward(hero);
-
-            hero.Experience += ExperiencePoints;
-            hero.HeroState = HeroStates.IDLE;
-
-            QuestSourceFaction faction = HeroManager.GetHeroFaction(hero);
-            ReputationManager.GetReputationTracker(faction).ModifyReputation(ExperiencePoints * 0.1f);
 
             if (HandlerItemReward != null) InventoryManager.OwnedItems.Add(HandlerItemReward.Item);
             InventoryManager.Gold += Mathf.RoundToInt(HandlerAverageExpectedGoldReward * UnityEngine.Random.Range(HANDLER_GOLD_VARIANCE_MIN, HANDLER_GOLD_VARIANCE_MAX));
@@ -123,13 +150,25 @@ namespace Rondo.QuestSim.Quests {
 
         public void RefundQuestRewards(bool refundGold, bool refundItem) {
             if (refundGold) {
-                Debug.Log("Refunding gold: " + GoldReward.GoldCount);
-                InventoryManager.Gold += GoldReward.GoldCount;
+                foreach (QuestRewardGold goldReward in GoldRewards) {
+                    InventoryManager.Gold += goldReward.GoldCount;
+                }
             }
 
-            if (refundItem && ItemReward != null) {
-                InventoryManager.MoveItemToOwned(ItemReward.Item);
+            if (refundItem) {
+                foreach (QuestRewardItem itemReward in ItemRewards) {
+                    if (itemReward == null) continue;
+                    InventoryManager.MoveItemToOwned(itemReward.Item);
+                }
             }
+        }
+
+        public int GetTotalGoldCount() {
+            int count = 0;
+            foreach(QuestRewardGold goldReward in GoldRewards) {
+                count += goldReward.GoldCount;
+            }
+            return count;
         }
     }
 
