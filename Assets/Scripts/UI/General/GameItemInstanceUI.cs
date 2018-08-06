@@ -1,15 +1,18 @@
-﻿using Rondo.QuestSim.Inventory;
+﻿using Rondo.QuestSim.General;
+using Rondo.QuestSim.Inventory;
 using Rondo.QuestSim.Quests.Rewards;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Rondo.QuestSim.UI.General {
 
     [RequireComponent(typeof(GameItemPopupCaller))]
     public class GameItemInstanceUI : MonoBehaviour {
 
+        public Image icon;
         public TextMeshProUGUI titleText;
 
         private GameItemPopupCaller m_ItemPopupCaller;
@@ -29,6 +32,7 @@ namespace Rondo.QuestSim.UI.General {
                 titleText.text = "-";
             } else {
                 titleText.text = item.DisplayName;
+                icon.overrideSprite = item.GetIcon();
             }
 
             m_ItemPopupCaller.associatedItem = item;

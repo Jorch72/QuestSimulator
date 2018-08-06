@@ -23,8 +23,11 @@ namespace Rondo.QuestSim.Inventory {
             OwnedItems = new List<GameItem>();
             ReservedItems = new List<GameItem>();
 
-            for (int i = 0; i < 10; i++) {
-                OwnedItems.Add(GameItemGenerator.GenerateItem( GameItemRarity.UNKNOWN, UnityEngine.Random.Range(0f, 1f)));
+            for (int i = 0; i < 3; i++) {
+                OwnedItems.Add(GameItemGenerator.GenerateItem(GameItemTypes.UNKNOWN, GameItemRarity.COMMON, UnityEngine.Random.Range(0f, 1f)));
+            }
+            for (int i = 0; i < 2; i++) {
+                OwnedItems.Add(GameItemGenerator.GenerateItem(GameItemTypes.UNKNOWN, GameItemRarity.UNCOMMON, UnityEngine.Random.Range(0f, 1f)));
             }
         }
 

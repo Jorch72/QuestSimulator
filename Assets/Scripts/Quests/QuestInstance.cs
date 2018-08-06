@@ -58,7 +58,6 @@ namespace Rondo.QuestSim.Quests {
         }
 
         public bool WouldHeroAccept(HeroInstance hero, int heroNumber) {
-            Debug.Log("Hero state on " + hero.DisplayName + " is " + hero.HeroState.ToString());
             if (hero.HeroState != HeroStates.IDLE) return false;
 
             float preferenceValue = 0;

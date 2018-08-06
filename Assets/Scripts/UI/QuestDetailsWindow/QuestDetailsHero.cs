@@ -67,13 +67,13 @@ namespace Rondo.QuestSim.UI.PostedQuests {
 
             heroRewardItemDropdown.onValueChanged.AddListener((value) => {
                 m_SelectedItemReward = value;
-                GameItem item = InventoryManager.OwnedItems[m_SelectedItemReward - 1];
+                GameItem item = null;
 
                 if (m_SelectedItemReward != 0) {
-                    heroRewardItemDropdown.GetComponent<GameItemPopupCaller>().associatedItem = item;
-                } else {
-                    heroRewardItemDropdown.GetComponent<GameItemPopupCaller>().associatedItem = null;
+                    item = InventoryManager.OwnedItems[m_SelectedItemReward - 1];
                 }
+
+                heroRewardItemDropdown.GetComponent<GameItemPopupCaller>().associatedItem = item;
 
                 QuestDetailsWindow.Instance.SelectedItemRewards[m_HeroNumber] = item;
 
@@ -153,7 +153,9 @@ namespace Rondo.QuestSim.UI.PostedQuests {
             heroSelectedInstance.ApplyHero(null);
         }
 
-        private void RefreshItemRewardDropdown() {
+        private void RefreshItemRewardDropdown(bool retainSelection = false) {
+            int selection = 0;
+
             List<string> itemRewardNames = new List<string>() { "-" };
             foreach(GameItem item in InventoryManager.OwnedItems) {
                 itemRewardNames.Add(item.DisplayName);
@@ -161,7 +163,7 @@ namespace Rondo.QuestSim.UI.PostedQuests {
 
             heroRewardItemDropdown.ClearOptions();
             heroRewardItemDropdown.AddOptions(itemRewardNames);
-            heroRewardItemDropdown.value = 0;
+            heroRewardItemDropdown.value = selection;
             heroRewardItemDropdown.RefreshShownValue();
 
             heroRewardItemDropdown.GetComponent<GameItemPopupCaller>().associatedItem = null;
@@ -171,7 +173,9 @@ namespace Rondo.QuestSim.UI.PostedQuests {
             GameItemPopupCaller[] itemInstances = heroRewardItemDropdown.GetComponentsInChildren<GameItemPopupCaller>();
             for (int i = 0; i < itemInstances.Length; i++) {
                 if (i == 0 || i == 1) continue;
-                itemInstances[i].associatedItem = (InventoryManager.OwnedItems[i - 2]);
+                GameItem item = (InventoryManager.OwnedItems[i - 2]);
+                itemInstances[i].associatedItem = item;
+                itemInstances[i].transform.GetChild(3).GetComponent<Image>().sprite = item.GetIcon();
             }
         }
 

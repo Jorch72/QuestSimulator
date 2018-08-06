@@ -49,8 +49,6 @@ namespace Rondo.QuestSim.UI.PostedQuests {
         public bool[] PostButtonStatuses { get; set; }
         public bool[] AcceptButtonStatuses { get; set; }
 
-        public HeroInstance[] TempSelectedHeroes { get; set; }
-
         private QuestDetailsHero[] m_HeroSections;
 
         void Awake() {
@@ -76,7 +74,6 @@ namespace Rondo.QuestSim.UI.PostedQuests {
             AcceptButtonStatuses = new bool[QuestInstance.MAX_HEROES_PER_QUEST];
             SelectedGoldRewards = new int[QuestInstance.MAX_HEROES_PER_QUEST];
             SelectedItemRewards = new GameItem[QuestInstance.MAX_HEROES_PER_QUEST];
-            TempSelectedHeroes = new HeroInstance[QuestInstance.MAX_HEROES_PER_QUEST];
 
             for (int i = 0; i < SelectedGoldRewards.Length; i++) {
                 SelectedGoldRewards[i] = 0;
@@ -326,10 +323,6 @@ namespace Rondo.QuestSim.UI.PostedQuests {
 
             for (int i = 0; i < SelectedHeroes.Length; i++) {
                 SelectedHeroes[i] = null;
-            }
-
-            for (int i = 0; i < TempSelectedHeroes.Length; i++) {
-                TempSelectedHeroes[i] = null;
             }
 
             for (int i = 0; i < SelectedItemRewards.Length; i++) {

@@ -11,9 +11,11 @@ namespace Rondo.QuestSim.General {
 
     public class SpriteFetcher : MonoBehaviourSingleton<SpriteFetcher> {
 
-        public static IconDatabase Icons { get { return Instance.icons; } }
+        public static PlayerIconDatabase PlayerIcons { get { return Instance.playerIcons; } }
+        public static ItemIconDatabase ItemIcons { get { return Instance.itemIcons; } }
 
-        public IconDatabase icons;
+        public PlayerIconDatabase playerIcons;
+        public ItemIconDatabase itemIcons;
 
         private void Awake() {
             Instance = this;

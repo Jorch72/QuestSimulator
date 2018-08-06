@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Rondo.QuestSim.ScriptableObjects {
 
     [CreateAssetMenu]
-    public class IconDatabase : ScriptableObject {
+    public class PlayerIconDatabase : ScriptableObject {
         public Sprite deathIcon;
         public Sprite questingIcon;
         public Sprite idleIcon;

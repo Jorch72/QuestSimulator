@@ -53,7 +53,7 @@ namespace Rondo.QuestSim.UI.Reputation {
         }
 
         public void UpdateHeroStatus() {
-            statusIcon.sprite = SpriteFetcher.Icons.GetSpriteForStatus(Hero != null ? Hero.HeroState : HeroStates.UNDISCOVERED);
+            statusIcon.sprite = SpriteFetcher.PlayerIcons.GetSpriteForStatus(Hero != null ? Hero.HeroState : HeroStates.UNDISCOVERED);
         }
 
         private void UpdateProgressInstant() {

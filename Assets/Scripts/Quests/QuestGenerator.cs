@@ -73,7 +73,7 @@ namespace Rondo.QuestSim.Quests {
             quest.PartySize = m_PartySizeChoser.GetRandomValue();
 
             if (Random.Range(0, itemRewardChance) == 0) {
-                GameItem itemReward = GameItemGenerator.GenerateItem(GetItemRarityForDifficulty(quest.DifficultyLevel));
+                GameItem itemReward = GameItemGenerator.GenerateItem(GameItemTypes.UNKNOWN, GetItemRarityForDifficulty(quest.DifficultyLevel));
                 quest.HandlerItemReward = new QuestRewardItem(itemReward);
             }
 

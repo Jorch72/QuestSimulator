@@ -283,33 +283,24 @@ namespace Rondo.QuestSim.Utility {
             return "";
         }
 
-        public static string GetItemName(GameItemRarity rarity) {
-            string[] itemTypes = new string[] {
-               "Sword",
-               "Hammer",
-               "Dagger",
-               "Shield",
-               "Staff",
-               "Wand",
-               "Chestpiece",
-               "Helmet",
-               "Gauntlets",
-               "Greaves",
-               "Leggings",
-               "Shoulderpads"
-            };
+        public static string GetItemName(GameItem item) {
+            GameItemRarity rarity = item.Rarity;
+            GameItemTypes type = item.ItemType;
+
+            string typeString = type.ToString().ToCamelCase();
+
             switch (rarity) {
                 default:
                 case GameItemRarity.COMMON:
-                    return "Trainee's " + itemTypes[Random.Range(0, itemTypes.Length)];
+                    return "Trainee's " + typeString;
                 case GameItemRarity.UNCOMMON:
-                    return "Steel " + itemTypes[Random.Range(0, itemTypes.Length)];
+                    return "Steel " + typeString;
                 case GameItemRarity.RARE:
-                    return "Enchanted " + itemTypes[Random.Range(0, itemTypes.Length)];
+                    return "Enchanted " + typeString;
                 case GameItemRarity.EPIC:
-                    return "Masterwork " + itemTypes[Random.Range(0, itemTypes.Length)];
+                    return "Masterwork " + typeString;
                 case GameItemRarity.LEGENDARY:
-                    return GetCompoundName() + ", " + itemTypes[Random.Range(0, itemTypes.Length)] + " of " + GetTerritoryName();
+                    return GetCompoundName() + ", " + typeString + " of " + GetTerritoryName();
             }
         }
 
