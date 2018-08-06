@@ -16,6 +16,7 @@ namespace Rondo.QuestSim.UI.General {
         public TextMeshProUGUI attackText;
         public TextMeshProUGUI defenceText;
         public TextMeshProUGUI overallPowerText;
+        public Image icon;
 
         public GraphicRaycaster canvasRaycaster;
 
@@ -28,7 +29,20 @@ namespace Rondo.QuestSim.UI.General {
 
         private void Update() {
             if (m_CurrentItem == null) return;
-            m_RectTransform.localPosition = Input.mousePosition - new Vector3(Screen.width / 2, Screen.height / 2, 0);
+
+            Vector2 windowPos = Input.mousePosition - new Vector3(Screen.width / 2, Screen.height / 2, 0);
+
+            //Check if out of bounds on X
+            if(windowPos.x + m_RectTransform.sizeDelta.x > Screen.width / 2) {
+                windowPos.x -= m_RectTransform.sizeDelta.x;
+            }
+
+            //Check if out of bounds on Y
+            if (windowPos.y - m_RectTransform.sizeDelta.y + (Screen.height / 2) < 0) {
+                windowPos.y += m_RectTransform.sizeDelta.y;
+            }
+
+            m_RectTransform.localPosition = windowPos;
         }
 
         public void SwitchItemTarget(GameItem item) {
@@ -45,6 +59,7 @@ namespace Rondo.QuestSim.UI.General {
             attackText.text = ""+item.AttackPower;
             defenceText.text = "" + item.DefencePower;
             overallPowerText.text = "" + item.OverallPower;
+            icon.overrideSprite = item.GetIcon();
         }
     }
 

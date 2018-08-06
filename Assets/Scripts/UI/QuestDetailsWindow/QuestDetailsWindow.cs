@@ -19,6 +19,8 @@ namespace Rondo.QuestSim.UI.PostedQuests {
 
     public class QuestDetailsWindow : MonoBehaviourSingleton<QuestDetailsWindow> {
 
+        public static string HIGHLIGHT_GROUP_ID = "quest_details_hero";
+
         public TextMeshProUGUI questTitle;
         public TextMeshProUGUI difficultyText;
         public TextMeshProUGUI successText;
@@ -339,7 +341,7 @@ namespace Rondo.QuestSim.UI.PostedQuests {
             }
 
             ReputationUI.Instance.ResetAvailableHeroes();
-            UIHighlighter.Instance.RemoveAll();
+            UIHighlighter.Instance.GetGroup(HIGHLIGHT_GROUP_ID).RemoveAll();
         }
 
     }

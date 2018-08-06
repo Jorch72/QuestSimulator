@@ -2,6 +2,7 @@
 using Rondo.QuestSim.Heroes;
 using Rondo.QuestSim.Quests.Sources;
 using Rondo.QuestSim.Reputation;
+using Rondo.QuestSim.UI.General;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -30,7 +31,7 @@ namespace Rondo.QuestSim.UI.Reputation {
         }
 
         private void ToggleOpenCloseState() {
-            gameObject.SetActive(!gameObject.activeSelf);
+            RightSideSwitch.Instance.ActivateObject(gameObject);
         }
 
         public void AddReputationTracker(ReputationTracker tracker) {

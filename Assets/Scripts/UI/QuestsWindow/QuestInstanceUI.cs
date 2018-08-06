@@ -57,11 +57,11 @@ namespace Rondo.QuestSim.UI.ActiveQuests {
                 case QuestDetailsWindowMode.SETUP:
                 case QuestDetailsWindowMode.POSTED_REVIEW:
                     int expiresInDays = m_QuestInstance.DaysLeftOnPost;
-                    titleText += "Expires in " + expiresInDays + " day" + (expiresInDays > 1 ? "s" : "");
+                    titleText += "Expires in <b>" + expiresInDays + "</b> day" + (expiresInDays > 1 ? "s" : "");
                     break;
                 case QuestDetailsWindowMode.ACTIVE_REVIEW:
                     int daysLeft = m_QuestInstance.DaysLeftOnQuest;
-                    titleText += daysLeft + " day" + (daysLeft > 1 ? "s" : "") + " left until completed";
+                    titleText += "<b>" + daysLeft + "</b> day" + (daysLeft > 1 ? "s" : "") + " left until completed";
                     break;
                 default:
                     break;

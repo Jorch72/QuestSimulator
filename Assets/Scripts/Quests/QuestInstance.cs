@@ -113,38 +113,51 @@ namespace Rondo.QuestSim.Quests {
             //Check if the hero completed it or not
             int successRate = GetTotalSuccessRate(heros);
 
+            int totalHeroes = 0;
+            int successHeroes = 0;
+
             for(int i = 0; i < heros.Length; i++) {
                 HeroInstance hero = heros[i];
                 if (hero == null) continue;
+                totalHeroes++;
 
+                bool giveRewards = true;
                 int failChance = UnityEngine.Random.Range(0, 101);
                 if (failChance > successRate) {
-                    RefundQuestRewards(true, true);
-
                     failChance = UnityEngine.Random.Range(0, 101);
                     if (failChance < 100 - successRate + 20) {
-                        hero.HeroState = HeroStates.DEAD;
+                        HeroManager.SetHeroToState(hero, HeroStates.DEAD);
+                        giveRewards = false;
                     } else {
-                        hero.HeroState = HeroStates.WOUNDED;
+                        HeroManager.SetHeroToState(hero, HeroStates.WOUNDED);
                         hero.WoundedDays = ((100 - successRate) / 10) + 4;
+                        successHeroes++;
                     }
-                    return false;
+                } else {
+                    successHeroes++;
                 }
 
-                if (ItemRewards[i] != null) ItemRewards[i].ApplyReward(hero);
-                if (AdditionalReward != null && i == 0) AdditionalReward.ApplyReward(hero);
+                if (giveRewards) {
+                    if (ItemRewards[i] != null) ItemRewards[i].ApplyReward(hero);
+                    if (AdditionalReward != null && i == 0) AdditionalReward.ApplyReward(hero);
 
-                hero.Experience += ExperiencePoints;
+                    hero.Experience += ExperiencePoints;
+                    QuestSourceFaction faction = HeroManager.GetHeroFaction(hero);
+                    ReputationManager.GetReputationTracker(faction).ModifyReputation(ExperiencePoints * 0.1f);
+                }
+
                 HeroManager.SetHeroToState(hero, HeroStates.IDLE);
-
-                QuestSourceFaction faction = HeroManager.GetHeroFaction(hero);
-                ReputationManager.GetReputationTracker(faction).ModifyReputation(ExperiencePoints * 0.1f);
             }
 
-            if (HandlerItemReward != null) InventoryManager.OwnedItems.Add(HandlerItemReward.Item);
-            InventoryManager.Gold += Mathf.RoundToInt(HandlerAverageExpectedGoldReward * UnityEngine.Random.Range(HANDLER_GOLD_VARIANCE_MIN, HANDLER_GOLD_VARIANCE_MAX));
-            InventoryManager.Stars += DifficultyLevel;
-            return true;
+            if(successHeroes == 0) {
+                RefundQuestRewards(true, true);
+                return false;
+            }else {
+                if (HandlerItemReward != null) InventoryManager.OwnedItems.Add(HandlerItemReward.Item);
+                InventoryManager.Gold += Mathf.RoundToInt(HandlerAverageExpectedGoldReward * UnityEngine.Random.Range(HANDLER_GOLD_VARIANCE_MIN, HANDLER_GOLD_VARIANCE_MAX));
+                InventoryManager.Stars += DifficultyLevel;
+                return true;
+            }
         }
 
         public void RefundQuestRewards(bool refundGold, bool refundItem) {
