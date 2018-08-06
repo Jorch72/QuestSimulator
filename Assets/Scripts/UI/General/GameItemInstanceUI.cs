@@ -33,6 +33,7 @@ namespace Rondo.QuestSim.UI.General {
             } else {
                 titleText.text = item.DisplayName;
                 icon.overrideSprite = item.GetIcon();
+                GetComponent<Image>().color = item.GetItemColor();
             }
 
             m_ItemPopupCaller.associatedItem = item;

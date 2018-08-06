@@ -1,4 +1,5 @@
 ﻿using Rondo.Generic.Utility;
+using Rondo.QuestSim.Facilities;
 using Rondo.QuestSim.Gameplay;
 using Rondo.QuestSim.Heroes;
 using Rondo.QuestSim.Inventory;
@@ -15,6 +16,7 @@ namespace Rondo.QuestSim.General {
             ReputationManager.Initialize();
             QuestManager.Initialize();
             InventoryManager.Initialize();
+            BlacksmithManager.Initialize();
         }
 
         private void Start() {

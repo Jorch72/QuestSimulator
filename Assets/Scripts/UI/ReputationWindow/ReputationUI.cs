@@ -1,4 +1,5 @@
 ﻿using Rondo.Generic.Utility;
+using Rondo.Generic.Utility.UI;
 using Rondo.QuestSim.Heroes;
 using Rondo.QuestSim.Quests.Sources;
 using Rondo.QuestSim.Reputation;
@@ -13,10 +14,14 @@ namespace Rondo.QuestSim.UI.Reputation {
 
     public class ReputationUI : MonoBehaviourSingleton<ReputationUI> {
 
+        public static string HIGHLIGHT_GROUP_ID = "hero_selection";
+
         public ReputationInstanceUI reputationInstancePrefab;
         public ReputationHeroInstanceUI heroInstancePrefab;
         public RectTransform reputationInstanceParent;
         public Button openCloseToggle;
+
+        public Color heroHighlightColor;
 
         private RectTransform m_RectTransform;
         private Dictionary<HeroInstance, ReputationHeroInstanceUI> m_HeroInstances = new Dictionary<HeroInstance, ReputationHeroInstanceUI>();
@@ -54,15 +59,23 @@ namespace Rondo.QuestSim.UI.Reputation {
         }
 
         public void SetAvailableHeroes(List<HeroInstance> heroes, Action<HeroInstance> onHeroClick) {
-            foreach(HeroInstance hero in m_HeroInstances.Keys) {
+            ResetAvailableHeroes();
+
+            foreach (HeroInstance hero in m_HeroInstances.Keys) {
                 bool isAvailable = heroes.Contains(hero);
                 m_HeroInstances[hero].SetAlpha(isAvailable ? 1 : 0.5f);
+
+                if (isAvailable) {
+                    UIHighlighter.Instance.GetGroup(HIGHLIGHT_GROUP_ID).AddObject(m_HeroInstances[hero].nameText, heroHighlightColor, Color.white);
+                }
             }
 
             m_OnHeroClicked = onHeroClick;
         }
 
         public void ResetAvailableHeroes() {
+            UIHighlighter.Instance.GetGroup(HIGHLIGHT_GROUP_ID).RemoveAll();
+
             foreach (HeroInstance hero in m_HeroInstances.Keys) {
                 m_HeroInstances[hero].SetAlpha(1);
             }

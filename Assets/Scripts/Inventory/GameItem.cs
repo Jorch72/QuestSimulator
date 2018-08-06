@@ -31,6 +31,10 @@ namespace Rondo.QuestSim.Inventory {
         public Sprite GetIcon() {
             return SpriteFetcher.Instance.itemIcons.GetSpriteForType(ItemType);
         }
+
+        public Color GetItemColor() {
+            return SpriteFetcher.Instance.itemIcons.GetColorForRarity(Rarity);
+        }
     }
 
 }

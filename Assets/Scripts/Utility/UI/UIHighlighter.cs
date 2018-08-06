@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -41,7 +42,7 @@ namespace Rondo.Generic.Utility.UI {
         public class HighlightGroup {
 
             private string m_GroupID;
-            private Dictionary<Graphic, HighlightSettings> m_HighlightObjects = new Dictionary<Graphic, HighlightSettings>();
+            private Dictionary<MonoBehaviour, IHighlightSettings> m_HighlightObjects = new Dictionary<MonoBehaviour, IHighlightSettings>();
 
             public HighlightGroup(string id) {
                 m_GroupID = id;
@@ -51,76 +52,108 @@ namespace Rondo.Generic.Utility.UI {
                 if (m_HighlightObjects.Count == 0) return;
 
                 float value = Mathf.Sin(Time.time * pulseSpeed).Map(-1, 1, 0, 1);
-                foreach (HighlightSettings hs in m_HighlightObjects.Values) {
+                foreach (IHighlightSettings hs in m_HighlightObjects.Values) {
                     hs.Update(value, lerpSpeed);
                 }
             }
 
-            public void AddObjects(Graphic[] graphics, Color hightlightColor) {
-                foreach (Graphic i in graphics) AddObject(i, hightlightColor, i.color);
+            public void AddObjects(MonoBehaviour[] objects, Color hightlightColor, Color startColor) {
+                foreach (MonoBehaviour i in objects) AddObject(i, hightlightColor, startColor);
             }
 
-            public void AddObjects(Graphic[] graphics, Color hightlightColor, Color startColor) {
-                foreach (Graphic i in graphics) AddObject(i, hightlightColor, startColor);
-            }
-
-            public void AddObject(Graphic image, Color hightlightColor) {
-                AddObject(image, hightlightColor, image.color);
-            }
-
-            public void AddObject(Graphic graphic, Color hightlightColor, Color startColor) {
-                if (m_HighlightObjects.ContainsKey(graphic)) {
-                    m_HighlightObjects[graphic].SetHighlightColor(hightlightColor);
+            public void AddObject(MonoBehaviour obj, Color hightlightColor, Color startColor) {
+                if (m_HighlightObjects.ContainsKey(obj)) {
+                    m_HighlightObjects[obj].SetHighlightColor(hightlightColor);
                 } else {
-                    m_HighlightObjects.Add(graphic, new HighlightSettings(graphic, startColor, hightlightColor));
+                    if(obj is TextMeshProUGUI) {
+                        m_HighlightObjects.Add(obj, new HighlightSettingsText(obj as TextMeshProUGUI, startColor, hightlightColor));
+                    } else if(obj is Graphic) {
+                        m_HighlightObjects.Add(obj, new HighlightSettingsGraphic(obj as Graphic, startColor, hightlightColor));
+                    } else {
+                        Debug.LogWarning("Attempted to add an object of type " + obj.GetType().Name + " as highlighted object, but it's not supported!");
+                    }
                 }
             }
 
-            public void RemoveObjects(Graphic[] graphic) {
-                foreach (Graphic g in graphic) RemoveObject(g);
+            public void RemoveObjects(MonoBehaviour[] objects) {
+                foreach (MonoBehaviour g in objects) RemoveObject(g);
             }
 
-            public void RemoveObject(Graphic graphic) {
-                if (!m_HighlightObjects.ContainsKey(graphic)) return;
-                m_HighlightObjects[graphic].Reset();
-                m_HighlightObjects.Remove(graphic);
+            public void RemoveObject(MonoBehaviour obj) {
+                if (!m_HighlightObjects.ContainsKey(obj)) return;
+                m_HighlightObjects[obj].Reset();
+                m_HighlightObjects.Remove(obj);
             }
 
             public void RemoveAll() {
-                List<Graphic> keys = new List<Graphic>(m_HighlightObjects.Keys);
+                List<MonoBehaviour> keys = new List<MonoBehaviour>(m_HighlightObjects.Keys);
                 for (int i = keys.Count - 1; i >= 0; i--) {
                     RemoveObject(keys[i]);
                 }
             }
         }
 
-        public class HighlightSettings {
+        public abstract class IHighlightSettings {
 
-            private Graphic m_Image;
-            private Color m_StartColor;
-            private Color m_EndColor;
+            protected Color m_StartColor;
+            protected Color m_EndColor;
+            protected Color m_EndColorTarget;
 
-            private Color m_EndColorTarget;
+            protected Color m_CurrentColor;
 
-            public HighlightSettings(Graphic image, Color startColor, Color endColor) {
-                m_Image = image;
+            public IHighlightSettings(Color startColor, Color endColor) {
                 m_StartColor = startColor;
                 m_EndColor = endColor;
                 m_EndColorTarget = endColor;
+
+                m_CurrentColor = m_StartColor;
             }
 
-            public void Update(float value, float lerpSpeed) {
+            public virtual void Update(float value, float lerpSpeed) {
                 m_EndColor = Color.Lerp(m_EndColor, m_EndColorTarget, lerpSpeed * Time.time);
-                Color highlightColor = Color.Lerp(m_StartColor, m_EndColor, value);
-                m_Image.color = Color.Lerp(m_Image.color, highlightColor, 1 * Time.time);
+                m_CurrentColor = Color.Lerp(m_StartColor, m_EndColor, value);
             }
 
             public void SetHighlightColor(Color c) {
                 m_EndColorTarget = c;
             }
 
-            public void Reset() {
-                m_Image.color = m_StartColor;
+            public virtual void Reset() { }
+        }
+
+        private class HighlightSettingsGraphic : IHighlightSettings {
+
+            private Graphic m_Object;
+
+            public HighlightSettingsGraphic(Graphic image, Color startColor, Color endColor) : base(startColor, endColor) {
+                m_Object = image;
+            }
+
+            public override void Update(float value, float lerpSpeed) {
+                base.Update(value, lerpSpeed);
+                m_Object.color = Color.Lerp(m_Object.color, m_CurrentColor, 1 * Time.time);
+            }
+
+            public override void Reset() {
+                m_Object.color = m_StartColor;
+            }
+        }
+
+        private class HighlightSettingsText : IHighlightSettings {
+
+            private TextMeshProUGUI m_Object;
+
+            public HighlightSettingsText(TextMeshProUGUI text, Color startColor, Color endColor) : base(startColor, endColor) {
+                m_Object = text;
+            }
+
+            public override void Update(float value, float lerpSpeed) {
+                base.Update(value, lerpSpeed);
+                m_Object.color = Color.Lerp(m_Object.color, m_CurrentColor, 1 * Time.time);
+            }
+
+            public override void Reset() {
+                m_Object.color = m_StartColor;
             }
         }
     }

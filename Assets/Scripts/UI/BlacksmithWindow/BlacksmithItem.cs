@@ -14,7 +14,7 @@ namespace Rondo.QuestSim.UI.Blacksmith {
 
         public void SetItem(GameItem item) {
             itemInstance.SetItem(item);
-            priceText.text = item.SellPrice + "G";
+            priceText.text = item.BuyPrice + "G";
         }
     }
 

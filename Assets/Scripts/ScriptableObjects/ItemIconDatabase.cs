@@ -8,6 +8,8 @@ namespace Rondo.QuestSim.ScriptableObjects {
 
     [CreateAssetMenu]
     public class ItemIconDatabase : ScriptableObject {
+
+        [Header("Icons")]
         public Sprite swordIcon;
         public Sprite hammerIcon;
         public Sprite daggerIcon;
@@ -20,6 +22,13 @@ namespace Rondo.QuestSim.ScriptableObjects {
         public Sprite greavesIcon;
         public Sprite leggingsIcon;
         public Sprite spauldersIcon;
+
+        [Header("Colors")]
+        public Color colorCommon;
+        public Color colorUncommon;
+        public Color colorRare;
+        public Color colorEpic;
+        public Color colorLegendary;
 
         public Sprite GetSpriteForType(GameItemTypes state) {
             switch (state) {
@@ -51,8 +60,27 @@ namespace Rondo.QuestSim.ScriptableObjects {
                     return null;
             }
         }
+
+        public Color GetColorForRarity(GameItemRarity rarity) {
+            switch (rarity) {
+                default:
+                case GameItemRarity.UNKNOWN:
+                case GameItemRarity.COMMON:
+                    return colorCommon;
+                case GameItemRarity.UNCOMMON:
+                    return colorUncommon;
+                case GameItemRarity.RARE:
+                    return colorRare;
+                case GameItemRarity.EPIC:
+                    return colorEpic;
+                case GameItemRarity.LEGENDARY:
+                    return colorLegendary;
+            }
+        }
     }
 
 }
+ 
+ 
  
  

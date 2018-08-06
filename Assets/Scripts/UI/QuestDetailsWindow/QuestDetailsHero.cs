@@ -103,10 +103,10 @@ namespace Rondo.QuestSim.UI.PostedQuests {
                 case QuestDetailsWindowMode.SETUP:
                     RefreshItemRewardDropdown();
                     SetNoHero();
-                    UIHighlighter.Instance.GetGroup(QuestDetailsWindow.HIGHLIGHT_GROUP_ID).AddObjects(highlightsRewards, UIHighlighter.Instance.redHighlightColor);
+                    UIHighlighter.Instance.GetGroup(QuestDetailsWindow.HIGHLIGHT_GROUP_ID).AddObjects(highlightsRewards, UIHighlighter.Instance.redHighlightColor, highlightsRewards[0].color);
                     break;
                 case QuestDetailsWindowMode.HERO_SELECT:
-                    UIHighlighter.Instance.GetGroup(QuestDetailsWindow.HIGHLIGHT_GROUP_ID).AddObjects(highlightsHeroSelect, UIHighlighter.Instance.redHighlightColor);
+                    UIHighlighter.Instance.GetGroup(QuestDetailsWindow.HIGHLIGHT_GROUP_ID).AddObjects(highlightsHeroSelect, UIHighlighter.Instance.redHighlightColor, highlightsHeroSelect[0].color);
                     break;
                 case QuestDetailsWindowMode.POSTED_REVIEW:
                     SetNoHero();
@@ -141,7 +141,7 @@ namespace Rondo.QuestSim.UI.PostedQuests {
 
             QuestDetailsWindow.Instance.SetSelectedHero(hero, m_HeroNumber);
 
-            UIHighlighter.Instance.GetGroup(QuestDetailsWindow.HIGHLIGHT_GROUP_ID).AddObjects(highlightsHeroSelect, UIHighlighter.Instance.greenHightlightColor);
+            UIHighlighter.Instance.GetGroup(QuestDetailsWindow.HIGHLIGHT_GROUP_ID).RemoveObjects(highlightsHeroSelect);
         }
 
         public void FindActiveHero() {
@@ -186,7 +186,11 @@ namespace Rondo.QuestSim.UI.PostedQuests {
 
             QuestDetailsWindow.Instance.PostButtonStatuses[m_HeroNumber] = isPostable;
 
-            UIHighlighter.Instance.GetGroup(QuestDetailsWindow.HIGHLIGHT_GROUP_ID).AddObjects(highlightsRewards, isPostable ? UIHighlighter.Instance.greenHightlightColor : UIHighlighter.Instance.redHighlightColor, Color.white);
+            if (isPostable) {
+                UIHighlighter.Instance.GetGroup(QuestDetailsWindow.HIGHLIGHT_GROUP_ID).RemoveObjects(highlightsRewards);
+            } else {
+                UIHighlighter.Instance.GetGroup(QuestDetailsWindow.HIGHLIGHT_GROUP_ID).AddObjects(highlightsRewards, UIHighlighter.Instance.redHighlightColor, highlightsRewards[0].color);
+            }
 
             QuestDetailsWindow.Instance.CheckPostButtonStatus();
         }

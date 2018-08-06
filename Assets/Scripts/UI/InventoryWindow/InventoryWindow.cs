@@ -45,11 +45,13 @@ namespace Rondo.QuestSim.UI.Inventory {
 
         private void AddItemsFromListToParent(List<GameItem> itemList, RectTransform parent) {
             DeleteInstancesFromParent(parent);
+
+            itemList = ItemUtility.SortByRarity(itemList);
+
             foreach (GameItem item in itemList) {
                 GameItemInstanceUI newInstance = Instantiate(itemPrefab);
                 newInstance.transform.SetParent(parent);
                 newInstance.SetItem(item);
-                newInstance.GetComponent<Image>().color = new Color(0.8f, 0.8f, 0.8f, 1);
             }
         }
 

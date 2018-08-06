@@ -1,4 +1,5 @@
 ﻿using Rondo.Generic.Utility;
+using Rondo.QuestSim.Facilities;
 using Rondo.QuestSim.Inventory;
 using Rondo.QuestSim.UI.General;
 using UnityEngine;
@@ -10,7 +11,6 @@ namespace Rondo.QuestSim.UI.Blacksmith {
 
         public BlacksmithItem blacksmithItemTemplate;
         public RectTransform buyItemsParent;
-        public RectTransform sellItemsParent;
         public RectTransform contractsParent;
 
         private RectTransform m_RectTransform;
@@ -24,18 +24,17 @@ namespace Rondo.QuestSim.UI.Blacksmith {
         }
 
         private void OnEnable() {
-            FillSellItems();
+            FillBuyItems();
         }
 
-        private void FillSellItems() {
-            DeleteInstancesFromParent(sellItemsParent);
+        private void FillBuyItems() {
+            DeleteInstancesFromParent(buyItemsParent);
 
-            foreach (GameItem item in InventoryManager.OwnedItems) {
+            foreach (GameItem item in BlacksmithManager.ItemsOnSale) {
                 BlacksmithItem newInstance = Instantiate(blacksmithItemTemplate);
-                newInstance.transform.SetParent(sellItemsParent);
+                newInstance.transform.SetParent(buyItemsParent);
                 newInstance.gameObject.SetActive(true);
                 newInstance.SetItem(item);
-                newInstance.itemInstance.GetComponent<Image>().color = new Color(0.8f, 0.8f, 0.8f, 1);
             }
         }
 

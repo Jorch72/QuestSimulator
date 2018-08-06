@@ -67,7 +67,7 @@ namespace Rondo.QuestSim.UI.ActiveQuests {
                 newInstance.ApplyQuestChain(quest);
 
                 if (quest.DaysLeftOnQuest == 1) {
-                    UIHighlighter.Instance.GetGroup(HIGHLIGHT_GROUP_ID).AddObject(newInstance.GetComponent<Image>(), questTurnColor1);
+                    UIHighlighter.Instance.GetGroup(HIGHLIGHT_GROUP_ID).AddObject(newInstance.GetComponent<Image>(), questTurnColor1, newInstance.GetComponent<Image>().color);
                 }
             }
 
@@ -77,7 +77,7 @@ namespace Rondo.QuestSim.UI.ActiveQuests {
                 newInstance.ApplyQuestChain(quest);
 
                 if(quest.DaysLeftOnPost == 1) {
-                    UIHighlighter.Instance.GetGroup(HIGHLIGHT_GROUP_ID).AddObject(newInstance.GetComponent<Image>(), requestTimeColor);
+                    UIHighlighter.Instance.GetGroup(HIGHLIGHT_GROUP_ID).AddObject(newInstance.GetComponent<Image>(), requestTimeColor, newInstance.GetComponent<Image>().color);
                 }
             }
         }
